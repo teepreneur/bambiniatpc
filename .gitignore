@@ -1,0 +1,6 @@
+.DS_Store
+.gemini/
+/brain/
+/scripts/
+/tmp/
+*.log
