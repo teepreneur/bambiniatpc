@@ -3,7 +3,48 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Bambini at PC — Learn Words, One Card at a Time</title>
+  <title>Bambini at PC — Premium Toddler Flashcards</title>
+  <meta name="description" content="A high-quality, low-stimuli interactive flashcard application designed specifically for toddlers. Featuring phonetic audio and inclusive character representation." />
+  <meta name="keywords" content="toddler flashcards, low-stimuli learning, early education, inclusive characters, phonetic sounds, baby at pc, bambini atpc" />
+  
+  <!-- OpenGraph / Social Sharing -->
+  <meta property="og:title" content="Bambini at PC — Learn Words, One Card at a Time" />
+  <meta property="og:description" content="High-quality, low-stimuli interactive flashcards for toddlers. Inclusive, educational, and beautifully designed." />
+  <meta property="og:image" content="https://atpc.bambinitracker.com/marketing/assets/logo.png" />
+  <meta property="og:url" content="https://atpc.bambinitracker.com/" />
+  <meta property="og:type" content="website" />
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Bambini at PC — Premium Toddler Flashcards" />
+  <meta name="twitter:description" content="Inclusive, low-stimuli learning experience for tiny hands." />
+  <meta name="twitter:image" content="https://atpc.bambinitracker.com/marketing/assets/logo.png" />
+
+  <!-- PWA & Mobile Branding -->
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/png" href="/marketing/assets/logo.png">
+  <meta name="theme-color" content="#2CC5BD">
+
+  <!-- LLM Discoverability (JSON-LD Schema) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Bambini at PC",
+    "description": "A premium, low-stimuli interactive flashcard application for toddlers. Features inclusive Black character representation and phonetic audio.",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Web Browser",
+    "url": "https://atpc.bambinitracker.com/",
+    "author": {
+      "@type": "Organization",
+      "name": "Bambini Tracker"
+    },
+    "educationalUse": "Early Childhood Education",
+    "license": "https://atpc.bambinitracker.com/license",
+    "keywords": "toddler, flashcards, education, inclusive, low-stimuli"
+  }
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Caveat:wght@600&display=swap" rel="stylesheet">
   <style>
@@ -56,7 +97,7 @@
       font-family: 'Nunito', sans-serif; font-size: 18px; font-weight: 900; 
       color: var(--text-dark); text-transform: uppercase; letter-spacing: 1px;
     }
-    .logo svg { width: 32px; height: 32px; }
+    .logo img { width: 32px; height: 32px; border-radius: 6px; }
     .logo span { color: var(--accent-primary); }
     .top-actions { display: flex; gap: 9px; align-items: center; }
     .btn-pill {
@@ -252,13 +293,7 @@
 
 <div class="top-bar">
   <div class="logo">
-    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="10" y="20" width="80" height="50" rx="6" fill="#2CC5BD" />
-      <rect x="15" y="25" width="70" height="40" rx="3" fill="#F8FBFC" />
-      <path d="M30 80 H70" stroke="#F5A623" stroke-width="8" stroke-linecap="round" />
-      <rect x="40" y="70" width="20" height="10" fill="#8DC63F" />
-      <circle cx="50" cy="45" r="10" fill="#F5A623" />
-    </svg>
+    <img src="marketing/assets/logo.png" alt="Bambini at PC Logo">
     bambini <span>at pc</span>
   </div>
   <div class="top-actions">

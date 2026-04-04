@@ -1,0 +1,16 @@
+{
+  "name": "Bambini at PC",
+  "short_name": "Bambini",
+  "description": "High-quality, low-stimuli interactive flashcards for toddlers.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F2EDE3",
+  "theme_color": "#2CC5BD",
+  "icons": [
+    {
+      "src": "marketing/assets/logo.png",
+      "sizes": "1024x1024",
+      "type": "image/png"
+    }
+  ]
+}
