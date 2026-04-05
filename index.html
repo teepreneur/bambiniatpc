@@ -2533,6 +2533,31 @@ const MELODIES = [
     {f:329.63, d:300},{f:392.00, d:300},{f:523.25, d:600},{f:493.88, d:400},{f:440.00, d:300},{f:440.00, d:300},{f:392.00, d:800},
     {f:293.66, d:300},{f:329.63, d:300},{f:349.23, d:800},{f:293.66, d:300},{f:329.63, d:300},{f:349.23, d:800},
     {f:293.66, d:300},{f:349.23, d:300},{f:493.88, d:600},{f:440.00, d:400},{f:392.00, d:800},{f:493.88, d:400},{f:523.25, d:1000}
+  ],
+  // 4. Baby Shark
+  [
+    {f:392.00, d:300}, {f:440.00, d:300}, {f:523.25, d:200}, {f:523.25, d:200}, {f:523.25, d:200}, {f:523.25, d:150}, {f:523.25, d:150}, {f:523.25, d:200}, {f:523.25, d:400},
+    {f:392.00, d:300}, {f:440.00, d:300}, {f:523.25, d:200}, {f:523.25, d:200}, {f:523.25, d:200}, {f:523.25, d:150}, {f:523.25, d:150}, {f:523.25, d:200}, {f:523.25, d:400},
+    {f:392.00, d:300}, {f:440.00, d:300}, {f:523.25, d:200}, {f:523.25, d:200}, {f:523.25, d:200}, {f:523.25, d:150}, {f:523.25, d:150}, {f:523.25, d:200}, {f:523.25, d:400},
+    {f:523.25, d:500}, {f:523.25, d:500}, {f:493.88, d:1000}
+  ],
+  // 5. Walking Walking
+  [
+    {f:261.63, d:400}, {f:293.66, d:400}, {f:329.63, d:400}, {f:261.63, d:400},
+    {f:261.63, d:400}, {f:293.66, d:400}, {f:329.63, d:400}, {f:261.63, d:400},
+    {f:329.63, d:400}, {f:349.23, d:400}, {f:392.00, d:800},
+    {f:329.63, d:400}, {f:349.23, d:400}, {f:392.00, d:800},
+    {f:392.00, d:200}, {f:440.00, d:200}, {f:392.00, d:200}, {f:349.23, d:200}, {f:329.63, d:200}, {f:261.63, d:200},
+    {f:392.00, d:200}, {f:440.00, d:200}, {f:392.00, d:200}, {f:349.23, d:200}, {f:329.63, d:200}, {f:261.63, d:200},
+    {f:293.66, d:400}, {f:392.00, d:400}, {f:261.63, d:800}
+  ],
+  // 6. Row Row Row Your Boat
+  [
+    {f:261.63, d:400}, {f:261.63, d:400}, {f:261.63, d:300}, {f:293.66, d:100}, {f:329.63, d:400},
+    {f:329.63, d:300}, {f:293.66, d:100}, {f:329.63, d:300}, {f:349.23, d:100}, {f:392.00, d:800},
+    {f:523.25, d:200}, {f:523.25, d:200}, {f:523.25, d:200}, {f:392.00, d:200}, {f:392.00, d:200}, {f:392.00, d:200}, 
+    {f:329.63, d:200}, {f:329.63, d:200}, {f:329.63, d:200}, {f:261.63, d:200}, {f:261.63, d:200}, {f:261.63, d:200},
+    {f:392.00, d:300}, {f:349.23, d:100}, {f:329.63, d:300}, {f:293.66, d:100}, {f:261.63, d:800}
   ]
 ];
 
@@ -2677,8 +2702,10 @@ function speakCard(card) {
   
   let customAudio = preloadedAudios[card.id];
   if (!customAudio) {
-    const fileName = card.word.charAt(0).toUpperCase() + card.word.slice(1).toLowerCase() + '.m4a';
-    customAudio = new Audio(`audios/${fileName}`);
+    const capitalized = card.word.charAt(0).toUpperCase() + card.word.slice(1).toLowerCase();
+    if (AVAILABLE_AUDIOS.has(capitalized)) {
+      customAudio = new Audio(`audios/${capitalized}.m4a`);
+    }
   }
   
   try { customAudio.currentTime = 0; } catch (e) {}
@@ -2725,17 +2752,26 @@ let currentDeck = CARDS;
 let currentIndex = 0, history = [], isAnimating = false;
 let isAlphabetMode = false;
 const STAGE_LABELS = { 1:'Stage 1 · One-Syllable Words', 2:'Stage 2 · Two-Syllable Words' };
+const AVAILABLE_AUDIOS = new Set([
+  'Apple','Baby','Ball','Basket','Bear','Bird','Boat','Book','Candle','Cat',
+  'Cup','Dog','Drum','Flower','Frog','Hand','Hat','Kitten','Leaf','Monkey',
+  'Moon','Pencil','Rabbit','Rocket','Star','Sun','Tree','Turtle','Water','Window'
+]);
+
 const preloadedAudios = {};
 
 function init() {
   CARDS.forEach(card => {
-    const fileName = card.word.charAt(0).toUpperCase() + card.word.slice(1).toLowerCase() + '.m4a';
-    const a = new Audio(`audios/${fileName}`);
-    a.preload = 'auto';
-    preloadedAudios[card.id] = a;
+    const capitalized = card.word.charAt(0).toUpperCase() + card.word.slice(1).toLowerCase();
+    if (AVAILABLE_AUDIOS.has(capitalized)) {
+      const a = new Audio(`audios/${capitalized}.m4a`);
+      a.preload = 'auto';
+      preloadedAudios[card.id] = a;
+    }
   });
   renderVine(); renderCards(); updateHint();
-  setTimeout(() => { if (currentIndex < currentDeck.length) speakCard(currentDeck[currentIndex]); }, 600);
+  // Autoplay of speech is disabled on init to comply with browser policies.
+  // Speech begins once the user first advances or interacts with the app.
 }
 
 function renderVine() {
