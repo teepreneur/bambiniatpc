@@ -2735,6 +2735,11 @@ function speakCard(card) {
     }
   }
   
+  if (!customAudio) {
+    playSyntheticFallback(card, btn);
+    return;
+  }
+  
   try { customAudio.currentTime = 0; } catch (e) {}
   activeAudio = customAudio;
   
