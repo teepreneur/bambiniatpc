@@ -314,12 +314,142 @@
       .bottom-controls { margin-top: 10px; }
       .book-banner { display: none; }
     }
+
+    /* ═══════════════════════════════════════════════
+       HOME SCREEN - Activity Selection Grid
+       ═══════════════════════════════════════════════ */
+    .home-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      width: 100%;
+      max-width: 500px;
+      animation: fadeIn 0.4s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .home-header {
+      font-size: clamp(20px, 5vw, 28px);
+      font-weight: 900;
+      color: var(--text-dark);
+      text-align: center;
+      margin-bottom: 24px;
+      letter-spacing: 1px;
+    }
+    .home-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      width: 100%;
+      max-width: 400px;
+    }
+    .activity-card {
+      aspect-ratio: 1;
+      background: var(--card-bg);
+      border-radius: 24px;
+      border: 2px solid var(--border-card);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 20px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+      box-shadow: 0 4px 16px var(--shadow-color);
+      min-width: 140px;
+      min-height: 140px;
+    }
+    .activity-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 28px var(--shadow-color);
+    }
+    .activity-card:active {
+      transform: scale(0.96);
+    }
+    .activity-icon {
+      width: 64px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .activity-icon svg {
+      width: 100%;
+      height: 100%;
+    }
+    .activity-name {
+      font-size: 16px;
+      font-weight: 900;
+      color: var(--text-dark);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .activity-desc {
+      font-size: 11px;
+      color: var(--text-light);
+      font-weight: 700;
+      margin-top: -4px;
+    }
+
+    /* Home button in top bar */
+    .btn-home {
+      background: var(--warm-white);
+      border: 1.5px solid var(--border-card);
+      border-radius: 50px;
+      padding: 8px 14px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-mid);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px var(--shadow-color);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-home:hover {
+      background: var(--text-dark);
+      color: #fff;
+      border-color: var(--text-dark);
+    }
+
+    /* Activity container wrapper */
+    .activity-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      animation: fadeIn 0.4s ease;
+    }
+
+    /* Responsive adjustments for home grid */
+    @media (max-width: 360px) {
+      .home-grid { gap: 12px; }
+      .activity-icon { width: 48px; height: 48px; }
+      .activity-name { font-size: 13px; }
+      .activity-card { padding: 14px; min-width: 120px; min-height: 120px; }
+    }
+    @media (min-width: 600px) {
+      .home-grid {
+        grid-template-columns: repeat(4, 1fr);
+        max-width: 600px;
+      }
+      .activity-card { aspect-ratio: auto; min-height: 160px; }
+    }
   </style>
 </head>
 <body>
 
 <div class="top-bar">
-  <div class="logo">
+  <button class="btn-home" id="homeBtn" onclick="goHome()" style="display:none;">← Home</button>
+  <div class="logo" id="logoArea">
     <img src="marketing/assets/logo.png" alt="Bambini at PC Logo">
     bambini <span>at pc</span>
   </div>
@@ -331,22 +461,31 @@
   </div>
 </div>
 
-<div class="stage-label" id="stageLabel"></div>
-<div class="progress-vine" id="progressVine"></div>
-<div class="card-arena" id="cardArena"></div>
-
-<div class="complete-screen" id="completeScreen">
-  <div style="font-size:58px">🌟</div>
-  <div style="font-size:24px;font-weight:900;color:var(--text-dark)">All done!</div>
-  <div style="font-size:14px;color:var(--text-mid);max-width:240px;line-height:1.7">Amazing work going through all the cards!</div>
-  <button class="btn-restart" onclick="restartDeck()">Start Again</button>
+<!-- HOME SCREEN -->
+<div class="home-container" id="homeContainer">
+  <div class="home-header">Choose an activity!</div>
+  <div class="home-grid" id="homeGrid"></div>
 </div>
 
-<div class="bottom-controls">
-  <button class="btn-control" id="undoBtn" onclick="undoCard()" disabled>← Back</button>
-  <button class="btn-control" id="nextBtn" onclick="nextCard()">Next →</button>
+<!-- ACTIVITY SCREEN -->
+<div class="activity-container" id="activityContainer" style="display:none;">
+  <div class="stage-label" id="stageLabel"></div>
+  <div class="progress-vine" id="progressVine"></div>
+  <div class="card-arena" id="cardArena"></div>
+
+  <div class="complete-screen" id="completeScreen">
+    <div style="font-size:58px">🌟</div>
+    <div style="font-size:24px;font-weight:900;color:var(--text-dark)">All done!</div>
+    <div style="font-size:14px;color:var(--text-mid);max-width:240px;line-height:1.7">Amazing work going through all the cards!</div>
+    <button class="btn-restart" onclick="restartDeck()">Start Again</button>
+  </div>
+
+  <div class="bottom-controls">
+    <button class="btn-control" id="undoBtn" onclick="undoCard()" disabled>← Back</button>
+    <button class="btn-control" id="nextBtn" onclick="nextCard()">Next →</button>
+  </div>
+  <div class="hint-text" id="hintText">Press SPACE to advance · ← to go back</div>
 </div>
-<div class="hint-text" id="hintText">Press SPACE to advance · ← to go back</div>
 
 <div class="book-banner">
   <div style="font-size:24px">📚</div>
@@ -389,6 +528,1052 @@
 //  • Child sees: "that IS a cat / apple / drum"
 // ══════════════════════════════════════════════════════════════
 const SVG = {
+
+// ═══════════════════════════════════════════════
+//  ACTIVITY ICONS (Home Screen)
+// ═══════════════════════════════════════════════
+
+// Words activity icon (ABC blocks)
+'icon-words': `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <rect x="8" y="35" width="28" height="28" rx="4" fill="#2CC5BD"/>
+  <text x="22" y="56" font-family="Nunito" font-size="16" font-weight="900" fill="white" text-anchor="middle">A</text>
+  <rect x="44" y="35" width="28" height="28" rx="4" fill="#F5A623"/>
+  <text x="58" y="56" font-family="Nunito" font-size="16" font-weight="900" fill="white" text-anchor="middle">B</text>
+  <rect x="26" y="12" width="28" height="28" rx="4" fill="#8DC63F"/>
+  <text x="40" y="33" font-family="Nunito" font-size="16" font-weight="900" fill="white" text-anchor="middle">C</text>
+</svg>`,
+
+// Phrases activity icon (speech bubble)
+'icon-phrases': `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <path d="M12,20 h46 a8,8 0 0 1 8,8 v22 a8,8 0 0 1 -8,8 h-30 l-12,12 v-12 h-4 a8,8 0 0 1 -8,-8 v-22 a8,8 0 0 1 8,-8 z" fill="#F5A623"/>
+  <circle cx="26" cy="39" r="4" fill="white"/>
+  <circle cx="40" cy="39" r="4" fill="white"/>
+  <circle cx="54" cy="39" r="4" fill="white"/>
+</svg>`,
+
+// Numbers activity icon (123)
+'icon-numbers': `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="20" cy="40" r="16" fill="#8DC63F"/>
+  <text x="20" y="46" font-family="Nunito" font-size="18" font-weight="900" fill="white" text-anchor="middle">1</text>
+  <circle cx="45" cy="28" r="14" fill="#2CC5BD"/>
+  <text x="45" y="34" font-family="Nunito" font-size="16" font-weight="900" fill="white" text-anchor="middle">2</text>
+  <circle cx="60" cy="52" r="14" fill="#A67BB5"/>
+  <text x="60" y="58" font-family="Nunito" font-size="16" font-weight="900" fill="white" text-anchor="middle">3</text>
+</svg>`,
+
+// Colors activity icon (palette)
+'icon-colors': `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="40" cy="42" rx="30" ry="26" fill="#F8E8D0"/>
+  <circle cx="28" cy="30" r="7" fill="#E53935"/>
+  <circle cx="48" cy="28" r="6" fill="#FDD835"/>
+  <circle cx="58" cy="42" r="6" fill="#43A047"/>
+  <circle cx="50" cy="56" r="6" fill="#1E88E5"/>
+  <circle cx="32" cy="54" r="6" fill="#8E24AA"/>
+  <ellipse cx="22" cy="48" rx="6" ry="8" fill="#F8E8D0"/>
+</svg>`,
+
+// Shapes activity icon (circle, square, triangle)
+'icon-shapes': `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="24" cy="32" r="14" fill="#C46B4A"/>
+  <rect x="42" y="18" width="26" height="26" rx="3" fill="#2CC5BD"/>
+  <polygon points="30,70 50,70 40,48" fill="#F5A623"/>
+</svg>`,
+
+// Animals activity icon (paw print)
+'icon-animals': `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="40" cy="52" rx="18" ry="14" fill="#7FA87E"/>
+  <ellipse cx="22" cy="34" rx="8" ry="10" fill="#7FA87E"/>
+  <ellipse cx="58" cy="34" rx="8" ry="10" fill="#7FA87E"/>
+  <ellipse cx="30" cy="22" rx="6" ry="8" fill="#7FA87E"/>
+  <ellipse cx="50" cy="22" rx="6" ry="8" fill="#7FA87E"/>
+</svg>`,
+
+// Body Parts activity icon (simple body outline)
+'icon-bodyparts': `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="40" cy="18" r="12" fill="#E8C8A0"/>
+  <ellipse cx="40" cy="48" rx="14" ry="18" fill="#E8C8A0"/>
+  <rect x="14" y="34" width="8" height="22" rx="4" fill="#E8C8A0"/>
+  <rect x="58" y="34" width="8" height="22" rx="4" fill="#E8C8A0"/>
+  <rect x="28" y="64" width="8" height="14" rx="4" fill="#E8C8A0"/>
+  <rect x="44" y="64" width="8" height="14" rx="4" fill="#E8C8A0"/>
+  <circle cx="35" cy="16" r="2" fill="#5A4A3A"/>
+  <circle cx="45" cy="16" r="2" fill="#5A4A3A"/>
+  <path d="M36,22 Q40,26 44,22" stroke="#5A4A3A" stroke-width="1.5" fill="none"/>
+</svg>`,
+
+// Actions activity icon (running figure)
+'icon-actions': `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="45" cy="14" r="10" fill="#FF6B6B"/>
+  <path d="M45,24 L45,44" stroke="#FF6B6B" stroke-width="8" stroke-linecap="round"/>
+  <path d="M30,32 L45,36 L60,28" stroke="#FF6B6B" stroke-width="6" stroke-linecap="round" fill="none"/>
+  <path d="M45,44 L32,68" stroke="#FF6B6B" stroke-width="6" stroke-linecap="round"/>
+  <path d="M45,44 L58,62" stroke="#FF6B6B" stroke-width="6" stroke-linecap="round"/>
+</svg>`,
+
+// ═══════════════════════════════════════════════
+//  NUMBER ILLUSTRATIONS (1-10 with countable objects)
+// ═══════════════════════════════════════════════
+
+// One - 1 red apple
+'one': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="35" ry="8" fill="#5A4A3A" opacity="0.12"/>
+  <ellipse cx="80" cy="95" rx="32" ry="35" fill="#E53935"/>
+  <ellipse cx="80" cy="95" rx="30" ry="33" fill="#EF5350"/>
+  <ellipse cx="68" cy="85" rx="8" ry="12" fill="#FFCDD2" opacity="0.4"/>
+  <path d="M80,60 Q85,50 82,42" stroke="#8D6E63" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <ellipse cx="90" cy="48" rx="12" ry="8" fill="#66BB6A" transform="rotate(-30,90,48)"/>
+  <text x="80" y="155" font-family="Nunito" font-size="14" font-weight="900" fill="#8DC63F" text-anchor="middle">1</text>
+</svg>`,
+
+// Two - 2 yellow stars
+'two': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="50" ry="8" fill="#5A4A3A" opacity="0.12"/>
+  <polygon points="50,45 55,65 75,65 58,78 65,98 50,85 35,98 42,78 25,65 45,65" fill="#FDD835"/>
+  <polygon points="110,55 115,75 135,75 118,88 125,108 110,95 95,108 102,88 85,75 105,75" fill="#FDD835"/>
+  <ellipse cx="45" cy="55" rx="4" ry="3" fill="#FFF59D" opacity="0.6"/>
+  <ellipse cx="105" cy="65" rx="4" ry="3" fill="#FFF59D" opacity="0.6"/>
+  <text x="80" y="155" font-family="Nunito" font-size="14" font-weight="900" fill="#8DC63F" text-anchor="middle">2</text>
+</svg>`,
+
+// Three - 3 blue balls
+'three': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="55" ry="8" fill="#5A4A3A" opacity="0.12"/>
+  <circle cx="45" cy="100" r="22" fill="#1E88E5"/>
+  <circle cx="80" cy="60" r="22" fill="#1E88E5"/>
+  <circle cx="115" cy="100" r="22" fill="#1E88E5"/>
+  <ellipse cx="38" cy="92" rx="6" ry="8" fill="#64B5F6" opacity="0.5"/>
+  <ellipse cx="73" cy="52" rx="6" ry="8" fill="#64B5F6" opacity="0.5"/>
+  <ellipse cx="108" cy="92" rx="6" ry="8" fill="#64B5F6" opacity="0.5"/>
+  <text x="80" y="155" font-family="Nunito" font-size="14" font-weight="900" fill="#8DC63F" text-anchor="middle">3</text>
+</svg>`,
+
+// Four - 4 orange butterflies
+'four': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="55" ry="8" fill="#5A4A3A" opacity="0.12"/>
+  <g transform="translate(30,40) scale(0.5)">
+    <ellipse cx="20" cy="30" rx="18" ry="22" fill="#FF9800"/>
+    <ellipse cx="60" cy="30" rx="18" ry="22" fill="#FF9800"/>
+    <ellipse cx="40" cy="35" rx="5" ry="15" fill="#5D4037"/>
+  </g>
+  <g transform="translate(90,30) scale(0.5)">
+    <ellipse cx="20" cy="30" rx="18" ry="22" fill="#FF9800"/>
+    <ellipse cx="60" cy="30" rx="18" ry="22" fill="#FF9800"/>
+    <ellipse cx="40" cy="35" rx="5" ry="15" fill="#5D4037"/>
+  </g>
+  <g transform="translate(25,85) scale(0.5)">
+    <ellipse cx="20" cy="30" rx="18" ry="22" fill="#FF9800"/>
+    <ellipse cx="60" cy="30" rx="18" ry="22" fill="#FF9800"/>
+    <ellipse cx="40" cy="35" rx="5" ry="15" fill="#5D4037"/>
+  </g>
+  <g transform="translate(95,80) scale(0.5)">
+    <ellipse cx="20" cy="30" rx="18" ry="22" fill="#FF9800"/>
+    <ellipse cx="60" cy="30" rx="18" ry="22" fill="#FF9800"/>
+    <ellipse cx="40" cy="35" rx="5" ry="15" fill="#5D4037"/>
+  </g>
+  <text x="80" y="155" font-family="Nunito" font-size="14" font-weight="900" fill="#8DC63F" text-anchor="middle">4</text>
+</svg>`,
+
+// Five - 5 pink flowers
+'five': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="55" ry="8" fill="#5A4A3A" opacity="0.12"/>
+  <g transform="translate(35,25)">
+    <circle cx="0" cy="-10" r="8" fill="#F48FB1"/><circle cx="10" cy="0" r="8" fill="#F48FB1"/>
+    <circle cx="6" cy="10" r="8" fill="#F48FB1"/><circle cx="-6" cy="10" r="8" fill="#F48FB1"/>
+    <circle cx="-10" cy="0" r="8" fill="#F48FB1"/><circle cx="0" cy="0" r="6" fill="#FDD835"/>
+  </g>
+  <g transform="translate(85,35)">
+    <circle cx="0" cy="-10" r="8" fill="#F48FB1"/><circle cx="10" cy="0" r="8" fill="#F48FB1"/>
+    <circle cx="6" cy="10" r="8" fill="#F48FB1"/><circle cx="-6" cy="10" r="8" fill="#F48FB1"/>
+    <circle cx="-10" cy="0" r="8" fill="#F48FB1"/><circle cx="0" cy="0" r="6" fill="#FDD835"/>
+  </g>
+  <g transform="translate(125,55)">
+    <circle cx="0" cy="-8" r="7" fill="#F48FB1"/><circle cx="8" cy="0" r="7" fill="#F48FB1"/>
+    <circle cx="5" cy="8" r="7" fill="#F48FB1"/><circle cx="-5" cy="8" r="7" fill="#F48FB1"/>
+    <circle cx="-8" cy="0" r="7" fill="#F48FB1"/><circle cx="0" cy="0" r="5" fill="#FDD835"/>
+  </g>
+  <g transform="translate(55,75)">
+    <circle cx="0" cy="-10" r="8" fill="#F48FB1"/><circle cx="10" cy="0" r="8" fill="#F48FB1"/>
+    <circle cx="6" cy="10" r="8" fill="#F48FB1"/><circle cx="-6" cy="10" r="8" fill="#F48FB1"/>
+    <circle cx="-10" cy="0" r="8" fill="#F48FB1"/><circle cx="0" cy="0" r="6" fill="#FDD835"/>
+  </g>
+  <g transform="translate(105,95)">
+    <circle cx="0" cy="-8" r="7" fill="#F48FB1"/><circle cx="8" cy="0" r="7" fill="#F48FB1"/>
+    <circle cx="5" cy="8" r="7" fill="#F48FB1"/><circle cx="-5" cy="8" r="7" fill="#F48FB1"/>
+    <circle cx="-8" cy="0" r="7" fill="#F48FB1"/><circle cx="0" cy="0" r="5" fill="#FDD835"/>
+  </g>
+  <text x="80" y="155" font-family="Nunito" font-size="14" font-weight="900" fill="#8DC63F" text-anchor="middle">5</text>
+</svg>`,
+
+// Six - 6 green leaves
+'six': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="55" ry="8" fill="#5A4A3A" opacity="0.12"/>
+  <ellipse cx="40" cy="40" rx="12" ry="20" fill="#66BB6A" transform="rotate(-20,40,40)"/>
+  <ellipse cx="80" cy="35" rx="12" ry="20" fill="#66BB6A"/>
+  <ellipse cx="120" cy="45" rx="12" ry="20" fill="#66BB6A" transform="rotate(20,120,45)"/>
+  <ellipse cx="45" cy="85" rx="12" ry="20" fill="#66BB6A" transform="rotate(-15,45,85)"/>
+  <ellipse cx="85" cy="80" rx="12" ry="20" fill="#66BB6A" transform="rotate(10,85,80)"/>
+  <ellipse cx="115" cy="90" rx="12" ry="20" fill="#66BB6A" transform="rotate(25,115,90)"/>
+  <text x="80" y="155" font-family="Nunito" font-size="14" font-weight="900" fill="#8DC63F" text-anchor="middle">6</text>
+</svg>`,
+
+// Seven - 7 purple grapes
+'seven': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="45" ry="8" fill="#5A4A3A" opacity="0.12"/>
+  <path d="M80,20 Q85,10 82,5" stroke="#8D6E63" stroke-width="3" fill="none"/>
+  <circle cx="65" cy="40" r="14" fill="#9C27B0"/>
+  <circle cx="95" cy="40" r="14" fill="#9C27B0"/>
+  <circle cx="50" cy="65" r="14" fill="#9C27B0"/>
+  <circle cx="80" cy="60" r="14" fill="#9C27B0"/>
+  <circle cx="110" cy="65" r="14" fill="#9C27B0"/>
+  <circle cx="65" cy="90" r="14" fill="#9C27B0"/>
+  <circle cx="95" cy="90" r="14" fill="#9C27B0"/>
+  <text x="80" y="155" font-family="Nunito" font-size="14" font-weight="900" fill="#8DC63F" text-anchor="middle">7</text>
+</svg>`,
+
+// Eight - 8 red hearts
+'eight': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="55" ry="8" fill="#5A4A3A" opacity="0.12"/>
+  <path d="M30,35 C30,25 40,20 45,30 C50,20 60,25 60,35 C60,50 45,55 45,55 C45,55 30,50 30,35" fill="#E53935"/>
+  <path d="M65,30 C65,20 75,15 80,25 C85,15 95,20 95,30 C95,45 80,50 80,50 C80,50 65,45 65,30" fill="#E53935"/>
+  <path d="M100,40 C100,30 110,25 115,35 C120,25 130,30 130,40 C130,55 115,60 115,60 C115,60 100,55 100,40" fill="#E53935"/>
+  <path d="M25,70 C25,60 35,55 40,65 C45,55 55,60 55,70 C55,85 40,90 40,90 C40,90 25,85 25,70" fill="#E53935"/>
+  <path d="M60,75 C60,65 70,60 75,70 C80,60 90,65 90,75 C90,90 75,95 75,95 C75,95 60,90 60,75" fill="#E53935"/>
+  <path d="M95,70 C95,60 105,55 110,65 C115,55 125,60 125,70 C125,85 110,90 110,90 C110,90 95,85 95,70" fill="#E53935"/>
+  <path d="M40,105 C40,95 50,90 55,100 C60,90 70,95 70,105 C70,120 55,125 55,125 C55,125 40,120 40,105" fill="#E53935"/>
+  <path d="M80,100 C80,90 90,85 95,95 C100,85 110,90 110,100 C110,115 95,120 95,120 C95,120 80,115 80,100" fill="#E53935"/>
+  <text x="80" y="155" font-family="Nunito" font-size="14" font-weight="900" fill="#8DC63F" text-anchor="middle">8</text>
+</svg>`,
+
+// Nine - 9 brown acorns
+'nine': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="55" ry="8" fill="#5A4A3A" opacity="0.12"/>
+  <g transform="translate(25,20)"><ellipse cx="10" cy="18" rx="8" ry="10" fill="#8D6E63"/><rect x="2" y="5" width="16" height="8" rx="4" fill="#A1887F"/></g>
+  <g transform="translate(55,15)"><ellipse cx="10" cy="18" rx="8" ry="10" fill="#8D6E63"/><rect x="2" y="5" width="16" height="8" rx="4" fill="#A1887F"/></g>
+  <g transform="translate(85,20)"><ellipse cx="10" cy="18" rx="8" ry="10" fill="#8D6E63"/><rect x="2" y="5" width="16" height="8" rx="4" fill="#A1887F"/></g>
+  <g transform="translate(115,25)"><ellipse cx="10" cy="18" rx="8" ry="10" fill="#8D6E63"/><rect x="2" y="5" width="16" height="8" rx="4" fill="#A1887F"/></g>
+  <g transform="translate(20,55)"><ellipse cx="10" cy="18" rx="8" ry="10" fill="#8D6E63"/><rect x="2" y="5" width="16" height="8" rx="4" fill="#A1887F"/></g>
+  <g transform="translate(50,60)"><ellipse cx="10" cy="18" rx="8" ry="10" fill="#8D6E63"/><rect x="2" y="5" width="16" height="8" rx="4" fill="#A1887F"/></g>
+  <g transform="translate(80,55)"><ellipse cx="10" cy="18" rx="8" ry="10" fill="#8D6E63"/><rect x="2" y="5" width="16" height="8" rx="4" fill="#A1887F"/></g>
+  <g transform="translate(110,60)"><ellipse cx="10" cy="18" rx="8" ry="10" fill="#8D6E63"/><rect x="2" y="5" width="16" height="8" rx="4" fill="#A1887F"/></g>
+  <g transform="translate(65,95)"><ellipse cx="10" cy="18" rx="8" ry="10" fill="#8D6E63"/><rect x="2" y="5" width="16" height="8" rx="4" fill="#A1887F"/></g>
+  <text x="80" y="155" font-family="Nunito" font-size="14" font-weight="900" fill="#8DC63F" text-anchor="middle">9</text>
+</svg>`,
+
+// Ten - 10 colorful balloons
+'ten': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="55" ry="8" fill="#5A4A3A" opacity="0.12"/>
+  <line x1="20" y1="135" x2="20" y2="50" stroke="#999" stroke-width="1"/>
+  <line x1="35" y1="135" x2="35" y2="40" stroke="#999" stroke-width="1"/>
+  <line x1="50" y1="135" x2="50" y2="55" stroke="#999" stroke-width="1"/>
+  <line x1="65" y1="135" x2="65" y2="35" stroke="#999" stroke-width="1"/>
+  <line x1="80" y1="135" x2="80" y2="45" stroke="#999" stroke-width="1"/>
+  <line x1="95" y1="135" x2="95" y2="50" stroke="#999" stroke-width="1"/>
+  <line x1="110" y1="135" x2="110" y2="60" stroke="#999" stroke-width="1"/>
+  <line x1="125" y1="135" x2="125" y2="40" stroke="#999" stroke-width="1"/>
+  <line x1="140" y1="135" x2="140" y2="55" stroke="#999" stroke-width="1"/>
+  <line x1="52" y1="135" x2="52" y2="70" stroke="#999" stroke-width="1"/>
+  <ellipse cx="20" cy="35" rx="12" ry="15" fill="#E53935"/>
+  <ellipse cx="35" cy="25" rx="12" ry="15" fill="#1E88E5"/>
+  <ellipse cx="50" cy="40" rx="12" ry="15" fill="#FDD835"/>
+  <ellipse cx="65" cy="20" rx="12" ry="15" fill="#66BB6A"/>
+  <ellipse cx="80" cy="30" rx="12" ry="15" fill="#9C27B0"/>
+  <ellipse cx="95" cy="35" rx="12" ry="15" fill="#FF9800"/>
+  <ellipse cx="110" cy="45" rx="12" ry="15" fill="#F48FB1"/>
+  <ellipse cx="125" cy="25" rx="12" ry="15" fill="#00BCD4"/>
+  <ellipse cx="140" cy="40" rx="12" ry="15" fill="#8D6E63"/>
+  <ellipse cx="52" cy="55" rx="12" ry="15" fill="#607D8B"/>
+  <text x="80" y="155" font-family="Nunito" font-size="14" font-weight="900" fill="#8DC63F" text-anchor="middle">10</text>
+</svg>`,
+
+// ═══════════════════════════════════════════════
+//  COLOR ILLUSTRATIONS
+// ═══════════════════════════════════════════════
+
+// Red - red apple
+'red': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="45" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <ellipse cx="80" cy="90" rx="45" ry="50" fill="#E53935"/>
+  <ellipse cx="80" cy="90" rx="42" ry="47" fill="#EF5350"/>
+  <ellipse cx="60" cy="75" rx="12" ry="18" fill="#FFCDD2" opacity="0.35"/>
+  <path d="M80,40 Q90,25 85,15" stroke="#8D6E63" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <ellipse cx="100" cy="30" rx="18" ry="12" fill="#66BB6A" transform="rotate(-25,100,30)"/>
+</svg>`,
+
+// Blue - blue ball
+'blue': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="45" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <circle cx="80" cy="85" r="50" fill="#1E88E5"/>
+  <circle cx="80" cy="85" r="47" fill="#42A5F5"/>
+  <ellipse cx="60" cy="65" rx="15" ry="20" fill="#90CAF9" opacity="0.5"/>
+  <path d="M45,85 Q80,60 115,85" stroke="#1565C0" stroke-width="4" fill="none" opacity="0.4"/>
+</svg>`,
+
+// Yellow - yellow sun
+'yellow': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="80" cy="80" r="40" fill="#FDD835"/>
+  <circle cx="80" cy="80" r="36" fill="#FFEB3B"/>
+  <ellipse cx="65" cy="70" rx="8" ry="10" fill="#FFF59D" opacity="0.6"/>
+  <line x1="80" y1="20" x2="80" y2="8" stroke="#FDD835" stroke-width="6" stroke-linecap="round"/>
+  <line x1="80" y1="152" x2="80" y2="140" stroke="#FDD835" stroke-width="6" stroke-linecap="round"/>
+  <line x1="20" y1="80" x2="8" y2="80" stroke="#FDD835" stroke-width="6" stroke-linecap="round"/>
+  <line x1="152" y1="80" x2="140" y2="80" stroke="#FDD835" stroke-width="6" stroke-linecap="round"/>
+  <line x1="35" y1="35" x2="26" y2="26" stroke="#FDD835" stroke-width="6" stroke-linecap="round"/>
+  <line x1="125" y1="35" x2="134" y2="26" stroke="#FDD835" stroke-width="6" stroke-linecap="round"/>
+  <line x1="35" y1="125" x2="26" y2="134" stroke="#FDD835" stroke-width="6" stroke-linecap="round"/>
+  <line x1="125" y1="125" x2="134" y2="134" stroke="#FDD835" stroke-width="6" stroke-linecap="round"/>
+</svg>`,
+
+// Green - green frog
+'green': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="50" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <ellipse cx="80" cy="100" rx="50" ry="40" fill="#66BB6A"/>
+  <ellipse cx="80" cy="100" rx="47" ry="37" fill="#81C784"/>
+  <circle cx="55" cy="60" r="22" fill="#66BB6A"/>
+  <circle cx="105" cy="60" r="22" fill="#66BB6A"/>
+  <circle cx="55" cy="58" r="12" fill="white"/>
+  <circle cx="105" cy="58" r="12" fill="white"/>
+  <circle cx="57" cy="58" r="6" fill="#2E7D32"/>
+  <circle cx="107" cy="58" r="6" fill="#2E7D32"/>
+  <ellipse cx="80" cy="105" rx="20" ry="10" fill="#A5D6A7"/>
+  <path d="M65,118 Q80,130 95,118" stroke="#43A047" stroke-width="3" fill="none"/>
+</svg>`,
+
+// Orange - orange fruit
+'orange': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="45" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <circle cx="80" cy="90" r="48" fill="#FF9800"/>
+  <circle cx="80" cy="90" r="45" fill="#FFA726"/>
+  <ellipse cx="60" cy="75" rx="10" ry="15" fill="#FFE0B2" opacity="0.4"/>
+  <path d="M80,42 L80,30" stroke="#8D6E63" stroke-width="4" stroke-linecap="round"/>
+  <ellipse cx="88" cy="35" rx="10" ry="6" fill="#66BB6A" transform="rotate(-20,88,35)"/>
+</svg>`,
+
+// Purple - purple grapes
+'purple': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="45" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <path d="M80,25 L80,15" stroke="#8D6E63" stroke-width="4" stroke-linecap="round"/>
+  <ellipse cx="90" cy="20" rx="12" ry="8" fill="#66BB6A" transform="rotate(-25,90,20)"/>
+  <circle cx="60" cy="55" r="20" fill="#9C27B0"/>
+  <circle cx="100" cy="55" r="20" fill="#9C27B0"/>
+  <circle cx="45" cy="85" r="20" fill="#9C27B0"/>
+  <circle cx="80" cy="80" r="20" fill="#9C27B0"/>
+  <circle cx="115" cy="85" r="20" fill="#9C27B0"/>
+  <circle cx="60" cy="115" r="20" fill="#9C27B0"/>
+  <circle cx="100" cy="115" r="20" fill="#9C27B0"/>
+  <ellipse cx="55" cy="50" rx="5" ry="6" fill="#CE93D8" opacity="0.5"/>
+  <ellipse cx="95" cy="50" rx="5" ry="6" fill="#CE93D8" opacity="0.5"/>
+</svg>`,
+
+// Pink - pink flower
+'pink': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="35" ry="8" fill="#5A4A3A" opacity="0.12"/>
+  <line x1="80" y1="145" x2="80" y2="95" stroke="#66BB6A" stroke-width="6"/>
+  <ellipse cx="55" cy="115" rx="12" ry="20" fill="#66BB6A" transform="rotate(-30,55,115)"/>
+  <ellipse cx="105" cy="115" rx="12" ry="20" fill="#66BB6A" transform="rotate(30,105,115)"/>
+  <circle cx="80" cy="35" r="20" fill="#F48FB1"/>
+  <circle cx="55" cy="55" r="20" fill="#F48FB1"/>
+  <circle cx="105" cy="55" r="20" fill="#F48FB1"/>
+  <circle cx="60" cy="85" r="20" fill="#F48FB1"/>
+  <circle cx="100" cy="85" r="20" fill="#F48FB1"/>
+  <circle cx="80" cy="60" r="18" fill="#FDD835"/>
+</svg>`,
+
+// Brown - brown teddy bear
+'brown': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="40" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <circle cx="45" cy="45" r="20" fill="#8D6E63"/>
+  <circle cx="115" cy="45" r="20" fill="#8D6E63"/>
+  <circle cx="45" cy="45" r="12" fill="#A1887F"/>
+  <circle cx="115" cy="45" r="12" fill="#A1887F"/>
+  <ellipse cx="80" cy="85" rx="45" ry="50" fill="#8D6E63"/>
+  <ellipse cx="80" cy="85" rx="42" ry="47" fill="#A1887F"/>
+  <circle cx="80" cy="50" r="35" fill="#8D6E63"/>
+  <ellipse cx="80" cy="65" rx="20" ry="15" fill="#D7CCC8"/>
+  <ellipse cx="80" cy="60" rx="8" ry="6" fill="#5D4037"/>
+  <circle cx="65" cy="45" r="5" fill="#3E2723"/>
+  <circle cx="95" cy="45" r="5" fill="#3E2723"/>
+  <circle cx="66" cy="44" r="2" fill="white"/>
+  <circle cx="96" cy="44" r="2" fill="white"/>
+  <path d="M72,72 Q80,80 88,72" stroke="#5D4037" stroke-width="2" fill="none"/>
+</svg>`,
+
+// ═══════════════════════════════════════════════
+//  SHAPE ILLUSTRATIONS
+// ═══════════════════════════════════════════════
+
+// Circle - red ball
+'circle': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="45" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <circle cx="80" cy="80" r="55" fill="#E53935"/>
+  <circle cx="80" cy="80" r="52" fill="#EF5350"/>
+  <ellipse cx="55" cy="55" rx="18" ry="22" fill="#FFCDD2" opacity="0.4"/>
+</svg>`,
+
+// Square - blue block
+'square': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="50" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <rect x="20" y="25" width="120" height="110" rx="8" fill="#1E88E5"/>
+  <rect x="25" y="30" width="110" height="100" rx="6" fill="#42A5F5"/>
+  <rect x="35" y="40" width="30" height="25" rx="4" fill="#90CAF9" opacity="0.5"/>
+</svg>`,
+
+// Triangle - yellow tent
+'triangle': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="60" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <polygon points="80,15 15,135 145,135" fill="#FDD835"/>
+  <polygon points="80,25 25,130 135,130" fill="#FFEB3B"/>
+  <polygon points="80,35 45,100 60,100" fill="#FFF59D" opacity="0.4"/>
+  <line x1="80" y1="15" x2="80" y2="135" stroke="#F9A825" stroke-width="3"/>
+</svg>`,
+
+// Rectangle - green door
+'rectangle': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="45" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <rect x="35" y="15" width="90" height="125" rx="6" fill="#66BB6A"/>
+  <rect x="40" y="20" width="80" height="115" rx="4" fill="#81C784"/>
+  <circle cx="105" cy="80" r="8" fill="#FDD835"/>
+  <rect x="50" y="30" width="20" height="30" rx="3" fill="#A5D6A7" opacity="0.5"/>
+</svg>`,
+
+// Star - gold star
+'shape-star': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="50" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <polygon points="80,10 95,55 145,55 105,85 120,135 80,105 40,135 55,85 15,55 65,55" fill="#FDD835"/>
+  <polygon points="80,20 92,55 135,55 100,80 112,125 80,100 48,125 60,80 25,55 68,55" fill="#FFEB3B"/>
+  <polygon points="80,30 70,50 55,55 65,70" fill="#FFF59D" opacity="0.5"/>
+</svg>`,
+
+// Heart - red heart
+'heart': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="50" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <path d="M80,140 C20,90 20,40 55,25 C75,15 80,35 80,35 C80,35 85,15 105,25 C140,40 140,90 80,140 Z" fill="#E53935"/>
+  <path d="M80,130 C30,85 30,45 57,32 C73,23 78,38 80,45 C82,38 87,23 103,32 C130,45 130,85 80,130 Z" fill="#EF5350"/>
+  <ellipse cx="50" cy="50" rx="12" ry="15" fill="#FFCDD2" opacity="0.4" transform="rotate(-30,50,50)"/>
+</svg>`,
+
+// ═══════════════════════════════════════════════
+//  PHRASE ILLUSTRATIONS (Daily Routines)
+// ═══════════════════════════════════════════════
+
+// Good Morning - sun rising with clouds
+'goodmorning': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="100" width="160" height="60" fill="#81C784" opacity="0.3"/>
+  <circle cx="80" cy="100" r="40" fill="#FDD835"/>
+  <circle cx="80" cy="100" r="36" fill="#FFEB3B"/>
+  <ellipse cx="65" cy="95" rx="8" ry="10" fill="#FFF59D" opacity="0.6"/>
+  <line x1="80" y1="45" x2="80" y2="30" stroke="#FDD835" stroke-width="5" stroke-linecap="round"/>
+  <line x1="120" y1="60" x2="132" y2="48" stroke="#FDD835" stroke-width="5" stroke-linecap="round"/>
+  <line x1="40" y1="60" x2="28" y2="48" stroke="#FDD835" stroke-width="5" stroke-linecap="round"/>
+  <line x1="135" y1="100" x2="150" y2="100" stroke="#FDD835" stroke-width="5" stroke-linecap="round"/>
+  <line x1="25" y1="100" x2="10" y2="100" stroke="#FDD835" stroke-width="5" stroke-linecap="round"/>
+  <ellipse cx="40" cy="50" rx="25" ry="15" fill="white"/>
+  <ellipse cx="55" cy="45" rx="18" ry="12" fill="white"/>
+  <ellipse cx="120" cy="55" rx="22" ry="14" fill="white"/>
+</svg>`,
+
+// Brush Teeth - toothbrush with paste
+'brushteeth': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="50" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <rect x="35" y="30" width="90" height="25" rx="6" fill="#42A5F5"/>
+  <rect x="40" y="35" width="80" height="15" rx="4" fill="#64B5F6"/>
+  <rect x="120" y="25" width="15" height="110" rx="4" fill="#42A5F5"/>
+  <rect x="122" y="30" width="11" height="100" rx="3" fill="#64B5F6"/>
+  <ellipse cx="75" cy="38" rx="25" ry="8" fill="white"/>
+  <path d="M50,35 Q75,20 100,35" stroke="#E0E0E0" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <circle cx="55" cy="42" r="4" fill="#E0E0E0"/>
+  <circle cx="75" cy="42" r="4" fill="#E0E0E0"/>
+  <circle cx="95" cy="42" r="4" fill="#E0E0E0"/>
+</svg>`,
+
+// Wash Hands - hands with bubbles
+'washhands': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="50" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <ellipse cx="55" cy="90" rx="30" ry="35" fill="#FFCCBC"/>
+  <ellipse cx="105" cy="90" rx="30" ry="35" fill="#FFCCBC"/>
+  <ellipse cx="55" cy="90" rx="27" ry="32" fill="#FFAB91"/>
+  <ellipse cx="105" cy="90" rx="27" ry="32" fill="#FFAB91"/>
+  <circle cx="30" cy="50" r="12" fill="#90CAF9" opacity="0.7"/>
+  <circle cx="55" cy="35" r="10" fill="#90CAF9" opacity="0.7"/>
+  <circle cx="80" cy="45" r="8" fill="#90CAF9" opacity="0.7"/>
+  <circle cx="105" cy="30" r="11" fill="#90CAF9" opacity="0.7"/>
+  <circle cx="130" cy="55" r="9" fill="#90CAF9" opacity="0.7"/>
+  <circle cx="45" cy="60" r="6" fill="#90CAF9" opacity="0.6"/>
+  <circle cx="115" cy="50" r="7" fill="#90CAF9" opacity="0.6"/>
+</svg>`,
+
+// Time for Bed - bed with moon
+'timeforbed': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="60" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <rect x="20" y="80" width="120" height="55" rx="8" fill="#8D6E63"/>
+  <rect x="25" y="85" width="110" height="45" rx="6" fill="#A1887F"/>
+  <rect x="15" y="70" width="35" height="70" rx="5" fill="#6D4C41"/>
+  <rect x="110" y="70" width="35" height="70" rx="5" fill="#6D4C41"/>
+  <ellipse cx="80" cy="95" rx="50" ry="20" fill="white"/>
+  <rect x="30" y="75" width="100" height="25" rx="5" fill="#E3F2FD"/>
+  <path d="M120,25 A25,25 0 1,1 120,50 A20,20 0 1,0 120,25" fill="#FDD835"/>
+  <circle cx="30" cy="30" r="2" fill="#FDD835"/>
+  <circle cx="50" cy="20" r="2" fill="#FDD835"/>
+  <circle cx="70" cy="35" r="2" fill="#FDD835"/>
+</svg>`,
+
+// Eat Food - plate with spoon
+'eatfood': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="55" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <ellipse cx="80" cy="90" rx="55" ry="40" fill="#E0E0E0"/>
+  <ellipse cx="80" cy="85" rx="50" ry="35" fill="#F5F5F5"/>
+  <ellipse cx="80" cy="80" rx="40" ry="28" fill="#FFCCBC"/>
+  <circle cx="60" cy="75" r="12" fill="#66BB6A"/>
+  <circle cx="95" cy="80" r="10" fill="#FF7043"/>
+  <ellipse cx="75" cy="90" rx="8" ry="5" fill="#FDD835"/>
+  <rect x="130" y="50" width="8" height="80" rx="3" fill="#9E9E9E"/>
+  <ellipse cx="134" cy="50" rx="10" ry="15" fill="#9E9E9E"/>
+</svg>`,
+
+// Say Hello - waving hand
+'sayhello': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="45" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <ellipse cx="80" cy="95" rx="35" ry="40" fill="#FFCCBC"/>
+  <ellipse cx="80" cy="95" rx="32" ry="37" fill="#FFAB91"/>
+  <ellipse cx="55" cy="45" rx="8" ry="25" fill="#FFCCBC" transform="rotate(-20,55,45)"/>
+  <ellipse cx="70" cy="35" rx="7" ry="22" fill="#FFCCBC" transform="rotate(-10,70,35)"/>
+  <ellipse cx="85" cy="30" rx="7" ry="22" fill="#FFCCBC"/>
+  <ellipse cx="100" cy="35" rx="7" ry="22" fill="#FFCCBC" transform="rotate(10,100,35)"/>
+  <ellipse cx="112" cy="50" rx="6" ry="18" fill="#FFCCBC" transform="rotate(25,112,50)"/>
+  <path d="M45,55 Q30,70 45,85" stroke="#F5A623" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M40,65 Q25,80 40,95" stroke="#F5A623" stroke-width="3" fill="none" stroke-linecap="round"/>
+</svg>`,
+
+// Drink Water - glass of water
+'drinkwater': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="35" ry="8" fill="#5A4A3A" opacity="0.12"/>
+  <path d="M50,30 L55,130 Q55,140 80,140 Q105,140 105,130 L110,30 Z" fill="#E3F2FD" opacity="0.8"/>
+  <path d="M55,50 L58,125 Q58,135 80,135 Q102,135 102,125 L105,50 Z" fill="#42A5F5" opacity="0.7"/>
+  <ellipse cx="80" cy="50" rx="27" ry="8" fill="#90CAF9" opacity="0.6"/>
+  <ellipse cx="65" cy="80" rx="8" ry="4" fill="white" opacity="0.5"/>
+  <ellipse cx="90" cy="100" rx="6" ry="3" fill="white" opacity="0.5"/>
+</svg>`,
+
+// Say Please - child with hands together
+'sayplease': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="40" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <circle cx="80" cy="50" r="30" fill="#8D6E63"/>
+  <ellipse cx="80" cy="110" rx="35" ry="35" fill="#42A5F5"/>
+  <ellipse cx="65" cy="95" rx="12" ry="20" fill="#FFCCBC" transform="rotate(15,65,95)"/>
+  <ellipse cx="95" cy="95" rx="12" ry="20" fill="#FFCCBC" transform="rotate(-15,95,95)"/>
+  <ellipse cx="80" cy="100" rx="8" ry="12" fill="#FFCCBC"/>
+  <circle cx="70" cy="45" r="4" fill="#3E2723"/>
+  <circle cx="90" cy="45" r="4" fill="#3E2723"/>
+  <path d="M72,60 Q80,68 88,60" stroke="#5D4037" stroke-width="2" fill="none"/>
+</svg>`,
+
+// Thank You - gift or heart
+'thankyou': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="45" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <rect x="35" y="55" width="90" height="80" rx="8" fill="#E91E63"/>
+  <rect x="40" y="60" width="80" height="70" rx="6" fill="#F48FB1"/>
+  <rect x="73" y="55" width="14" height="80" fill="#FDD835"/>
+  <rect x="35" y="85" width="90" height="14" fill="#FDD835"/>
+  <path d="M62,55 Q80,30 98,55" fill="#FDD835"/>
+  <circle cx="62" cy="45" r="12" fill="#FDD835"/>
+  <circle cx="98" cy="45" r="12" fill="#FDD835"/>
+</svg>`,
+
+// I Love You - heart hug
+'iloveyou': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="50" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <path d="M80,130 C25,85 25,40 55,25 C72,18 80,35 80,35 C80,35 88,18 105,25 C135,40 135,85 80,130 Z" fill="#E53935"/>
+  <path d="M80,120 C35,80 35,45 58,33 C72,26 78,40 80,48 C82,40 88,26 102,33 C125,45 125,80 80,120 Z" fill="#EF5350"/>
+  <ellipse cx="52" cy="50" rx="10" ry="12" fill="#FFCDD2" opacity="0.5" transform="rotate(-25,52,50)"/>
+  <circle cx="65" cy="70" r="4" fill="#C62828"/>
+  <circle cx="95" cy="70" r="4" fill="#C62828"/>
+  <path d="M75,85 Q80,92 85,85" stroke="#C62828" stroke-width="3" fill="none" stroke-linecap="round"/>
+</svg>`,
+
+// Clean Up - toys in box
+'cleanup': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="55" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <rect x="30" y="70" width="100" height="70" rx="8" fill="#8D6E63"/>
+  <rect x="35" y="75" width="90" height="60" rx="6" fill="#A1887F"/>
+  <rect x="55" y="55" width="20" height="20" rx="3" fill="#42A5F5"/>
+  <rect x="85" y="50" width="18" height="18" rx="3" fill="#66BB6A"/>
+  <circle cx="70" cy="40" r="12" fill="#FDD835"/>
+  <polygon points="100,35 105,45 115,45 107,52 110,62 100,55 90,62 93,52 85,45 95,45" fill="#FF9800"/>
+</svg>`,
+
+// Time to Play - toy blocks
+'timetoplay': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="55" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <rect x="30" y="90" width="45" height="45" rx="6" fill="#E53935"/>
+  <rect x="85" y="90" width="45" height="45" rx="6" fill="#42A5F5"/>
+  <rect x="57" y="45" width="45" height="45" rx="6" fill="#FDD835"/>
+  <text x="52" y="122" font-family="Nunito" font-size="24" font-weight="900" fill="white">A</text>
+  <text x="100" y="122" font-family="Nunito" font-size="24" font-weight="900" fill="white">B</text>
+  <text x="72" y="78" font-family="Nunito" font-size="24" font-weight="900" fill="white">C</text>
+</svg>`,
+
+// ═══════════════════════════════════════════════
+//  ADDITIONAL ANIMAL ILLUSTRATIONS
+// ═══════════════════════════════════════════════
+
+// Lion
+'lion': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="45" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <circle cx="80" cy="75" r="50" fill="#FF9800"/>
+  <circle cx="80" cy="80" r="35" fill="#FFA726"/>
+  <ellipse cx="80" cy="95" rx="15" ry="10" fill="#FFE0B2"/>
+  <circle cx="65" cy="75" r="6" fill="#3E2723"/>
+  <circle cx="95" cy="75" r="6" fill="#3E2723"/>
+  <circle cx="66" cy="74" r="2" fill="white"/>
+  <circle cx="96" cy="74" r="2" fill="white"/>
+  <ellipse cx="80" cy="88" rx="6" ry="4" fill="#5D4037"/>
+  <path d="M72,100 Q80,108 88,100" stroke="#5D4037" stroke-width="2" fill="none"/>
+  <path d="M30,60 Q40,30 60,50" stroke="#E65100" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <path d="M130,60 Q120,30 100,50" stroke="#E65100" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <path d="M45,90 Q25,80 35,60" stroke="#E65100" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <path d="M115,90 Q135,80 125,60" stroke="#E65100" stroke-width="8" fill="none" stroke-linecap="round"/>
+</svg>`,
+
+// Elephant
+'elephant': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="50" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <ellipse cx="80" cy="90" rx="50" ry="45" fill="#78909C"/>
+  <ellipse cx="80" cy="90" rx="47" ry="42" fill="#90A4AE"/>
+  <circle cx="80" cy="55" r="35" fill="#78909C"/>
+  <ellipse cx="45" cy="55" rx="20" ry="25" fill="#78909C"/>
+  <ellipse cx="115" cy="55" rx="20" ry="25" fill="#78909C"/>
+  <ellipse cx="45" cy="55" rx="12" ry="18" fill="#F48FB1" opacity="0.4"/>
+  <ellipse cx="115" cy="55" rx="12" ry="18" fill="#F48FB1" opacity="0.4"/>
+  <path d="M80,70 Q85,90 75,115 Q70,125 80,130" stroke="#78909C" stroke-width="15" fill="none" stroke-linecap="round"/>
+  <circle cx="65" cy="50" r="5" fill="#37474F"/>
+  <circle cx="95" cy="50" r="5" fill="#37474F"/>
+</svg>`,
+
+// Pig
+'pig': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="45" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <ellipse cx="80" cy="90" rx="50" ry="45" fill="#F48FB1"/>
+  <ellipse cx="80" cy="90" rx="47" ry="42" fill="#F8BBD9"/>
+  <circle cx="80" cy="60" r="30" fill="#F48FB1"/>
+  <ellipse cx="55" cy="45" rx="15" ry="20" fill="#F48FB1" transform="rotate(-20,55,45)"/>
+  <ellipse cx="105" cy="45" rx="15" ry="20" fill="#F48FB1" transform="rotate(20,105,45)"/>
+  <ellipse cx="80" cy="75" rx="18" ry="12" fill="#EC407A"/>
+  <circle cx="73" cy="73" r="4" fill="#C2185B"/>
+  <circle cx="87" cy="73" r="4" fill="#C2185B"/>
+  <circle cx="65" cy="55" r="5" fill="#4E342E"/>
+  <circle cx="95" cy="55" r="5" fill="#4E342E"/>
+  <circle cx="66" cy="54" r="2" fill="white"/>
+  <circle cx="96" cy="54" r="2" fill="white"/>
+</svg>`,
+
+// Cow
+'cow': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="50" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <ellipse cx="80" cy="95" rx="50" ry="40" fill="#FAFAFA"/>
+  <ellipse cx="50" cy="85" rx="18" ry="15" fill="#4E342E"/>
+  <ellipse cx="110" cy="90" rx="15" ry="20" fill="#4E342E"/>
+  <ellipse cx="80" cy="105" rx="12" ry="8" fill="#4E342E"/>
+  <circle cx="80" cy="55" r="30" fill="#FAFAFA"/>
+  <ellipse cx="50" cy="35" rx="12" ry="18" fill="#FAFAFA" transform="rotate(-30,50,35)"/>
+  <ellipse cx="110" cy="35" rx="12" ry="18" fill="#FAFAFA" transform="rotate(30,110,35)"/>
+  <ellipse cx="50" cy="32" rx="5" ry="8" fill="#F48FB1" transform="rotate(-30,50,32)"/>
+  <ellipse cx="110" cy="32" rx="5" ry="8" fill="#F48FB1" transform="rotate(30,110,32)"/>
+  <ellipse cx="80" cy="70" rx="15" ry="10" fill="#FFCCBC"/>
+  <circle cx="75" cy="68" r="3" fill="#5D4037"/>
+  <circle cx="85" cy="68" r="3" fill="#5D4037"/>
+  <circle cx="65" cy="50" r="5" fill="#3E2723"/>
+  <circle cx="95" cy="50" r="5" fill="#3E2723"/>
+</svg>`,
+
+// Sheep
+'sheep': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="45" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <circle cx="45" cy="85" r="18" fill="#FAFAFA"/>
+  <circle cx="115" cy="85" r="18" fill="#FAFAFA"/>
+  <circle cx="60" cy="70" r="20" fill="#FAFAFA"/>
+  <circle cx="100" cy="70" r="20" fill="#FAFAFA"/>
+  <circle cx="80" cy="95" r="25" fill="#FAFAFA"/>
+  <circle cx="55" cy="100" r="15" fill="#FAFAFA"/>
+  <circle cx="105" cy="100" r="15" fill="#FAFAFA"/>
+  <circle cx="80" cy="50" r="22" fill="#3E2723"/>
+  <ellipse cx="60" cy="35" rx="8" ry="12" fill="#3E2723"/>
+  <ellipse cx="100" cy="35" rx="8" ry="12" fill="#3E2723"/>
+  <circle cx="72" cy="48" r="4" fill="#1B1B1B"/>
+  <circle cx="88" cy="48" r="4" fill="#1B1B1B"/>
+  <ellipse cx="80" cy="58" rx="5" ry="3" fill="#1B1B1B"/>
+</svg>`,
+
+// Horse
+'horse': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="45" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <ellipse cx="85" cy="100" rx="45" ry="35" fill="#8D6E63"/>
+  <ellipse cx="55" cy="55" rx="25" ry="35" fill="#8D6E63"/>
+  <ellipse cx="55" cy="80" rx="12" ry="8" fill="#BCAAA4"/>
+  <ellipse cx="40" cy="30" rx="8" ry="18" fill="#8D6E63" transform="rotate(-15,40,30)"/>
+  <ellipse cx="70" cy="30" rx="8" ry="18" fill="#8D6E63" transform="rotate(15,70,30)"/>
+  <path d="M55,20 Q40,5 55,0 Q70,5 55,20" fill="#5D4037"/>
+  <circle cx="45" cy="50" r="4" fill="#3E2723"/>
+  <circle cx="65" cy="50" r="4" fill="#3E2723"/>
+  <circle cx="50" cy="75" r="2" fill="#5D4037"/>
+  <circle cx="60" cy="75" r="2" fill="#5D4037"/>
+</svg>`,
+
+// Chicken
+'chicken': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="40" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <ellipse cx="80" cy="100" rx="40" ry="35" fill="#FAFAFA"/>
+  <ellipse cx="80" cy="100" rx="37" ry="32" fill="#FFF8E1"/>
+  <circle cx="80" cy="55" r="25" fill="#FAFAFA"/>
+  <path d="M80,30 L75,15 L80,20 L85,15 L80,30" fill="#E53935"/>
+  <polygon points="100,55 120,50 100,60" fill="#FF9800"/>
+  <circle cx="90" cy="50" r="4" fill="#3E2723"/>
+  <path d="M75,70 Q80,75 85,70 Q80,72 75,70" fill="#E53935"/>
+  <rect x="70" y="130" width="6" height="15" fill="#FF9800"/>
+  <rect x="84" y="130" width="6" height="15" fill="#FF9800"/>
+</svg>`,
+
+// Butterfly
+'butterfly': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="40" ry="8" fill="#5A4A3A" opacity="0.12"/>
+  <ellipse cx="45" cy="60" rx="30" ry="35" fill="#E91E63"/>
+  <ellipse cx="115" cy="60" rx="30" ry="35" fill="#E91E63"/>
+  <ellipse cx="50" cy="105" rx="22" ry="28" fill="#F48FB1"/>
+  <ellipse cx="110" cy="105" rx="22" ry="28" fill="#F48FB1"/>
+  <ellipse cx="80" cy="85" rx="8" ry="35" fill="#5D4037"/>
+  <circle cx="40" cy="55" r="8" fill="#FDD835"/>
+  <circle cx="120" cy="55" r="8" fill="#FDD835"/>
+  <circle cx="55" cy="45" r="5" fill="#FDD835"/>
+  <circle cx="105" cy="45" r="5" fill="#FDD835"/>
+  <circle cx="80" cy="45" r="6" fill="#5D4037"/>
+  <path d="M75,40 Q70,25 65,35" stroke="#5D4037" stroke-width="2" fill="none"/>
+  <path d="M85,40 Q90,25 95,35" stroke="#5D4037" stroke-width="2" fill="none"/>
+</svg>`,
+
+// Ladybug
+'ladybug': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="45" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <ellipse cx="80" cy="90" rx="50" ry="45" fill="#E53935"/>
+  <ellipse cx="80" cy="90" rx="47" ry="42" fill="#EF5350"/>
+  <line x1="80" y1="45" x2="80" y2="135" stroke="#212121" stroke-width="4"/>
+  <circle cx="55" cy="70" r="10" fill="#212121"/>
+  <circle cx="105" cy="75" r="8" fill="#212121"/>
+  <circle cx="60" cy="105" r="9" fill="#212121"/>
+  <circle cx="100" cy="100" r="11" fill="#212121"/>
+  <circle cx="80" cy="40" r="18" fill="#212121"/>
+  <circle cx="73" cy="38" r="4" fill="white"/>
+  <circle cx="87" cy="38" r="4" fill="white"/>
+  <circle cx="73" cy="38" r="2" fill="#212121"/>
+  <circle cx="87" cy="38" r="2" fill="#212121"/>
+  <path d="M70,25 Q65,10 60,20" stroke="#212121" stroke-width="3" fill="none"/>
+  <path d="M90,25 Q95,10 100,20" stroke="#212121" stroke-width="3" fill="none"/>
+</svg>`,
+
+// Fish (copy for animals - different from words fish)
+'fish-animal': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="45" ry="8" fill="#5A4A3A" opacity="0.12"/>
+  <ellipse cx="75" cy="80" rx="50" ry="35" fill="#FF9800"/>
+  <ellipse cx="75" cy="80" rx="47" ry="32" fill="#FFA726"/>
+  <polygon points="130,80 155,55 155,105" fill="#FF9800"/>
+  <ellipse cx="50" cy="75" rx="8" ry="10" fill="white"/>
+  <circle cx="52" cy="75" r="5" fill="#3E2723"/>
+  <path d="M85,65 Q100,80 85,95" stroke="#E65100" stroke-width="3" fill="none"/>
+  <ellipse cx="30" cy="60" rx="15" ry="8" fill="#FF9800" transform="rotate(-30,30,60)"/>
+  <ellipse cx="30" cy="100" rx="15" ry="8" fill="#FF9800" transform="rotate(30,30,100)"/>
+</svg>`,
+
+// ═══════════════════════════════════════════════
+//  BODY PARTS ILLUSTRATIONS
+// ═══════════════════════════════════════════════
+
+// Head
+'head': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="35" ry="8" fill="#5A4A3A" opacity="0.12"/>
+  <circle cx="80" cy="75" r="55" fill="#FFCCBC"/>
+  <circle cx="80" cy="75" r="52" fill="#FFAB91"/>
+  <ellipse cx="55" cy="70" rx="10" ry="12" fill="white"/>
+  <ellipse cx="105" cy="70" rx="10" ry="12" fill="white"/>
+  <circle cx="57" cy="72" r="6" fill="#5D4037"/>
+  <circle cx="107" cy="72" r="6" fill="#5D4037"/>
+  <circle cx="58" cy="70" r="2" fill="white"/>
+  <circle cx="108" cy="70" r="2" fill="white"/>
+  <ellipse cx="80" cy="90" rx="6" ry="4" fill="#E57373"/>
+  <path d="M65,105 Q80,118 95,105" stroke="#BF360C" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M30,50 Q50,10 80,15 Q110,10 130,50" fill="#5D4037"/>
+</svg>`,
+
+// Eyes
+'eyes': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="50" cy="80" rx="30" ry="35" fill="white" stroke="#E0E0E0" stroke-width="2"/>
+  <ellipse cx="110" cy="80" rx="30" ry="35" fill="white" stroke="#E0E0E0" stroke-width="2"/>
+  <circle cx="55" cy="80" r="18" fill="#8D6E63"/>
+  <circle cx="115" cy="80" r="18" fill="#8D6E63"/>
+  <circle cx="55" cy="80" r="10" fill="#3E2723"/>
+  <circle cx="115" cy="80" r="10" fill="#3E2723"/>
+  <circle cx="60" cy="75" r="5" fill="white"/>
+  <circle cx="120" cy="75" r="5" fill="white"/>
+  <path d="M25,55 Q50,45 75,55" stroke="#5D4037" stroke-width="4" fill="none"/>
+  <path d="M85,55 Q110,45 135,55" stroke="#5D4037" stroke-width="4" fill="none"/>
+</svg>`,
+
+// Ears
+'ears': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="35" cy="80" rx="25" ry="45" fill="#FFCCBC"/>
+  <ellipse cx="35" cy="80" rx="22" ry="42" fill="#FFAB91"/>
+  <ellipse cx="35" cy="80" rx="12" ry="25" fill="#FFCCBC"/>
+  <ellipse cx="125" cy="80" rx="25" ry="45" fill="#FFCCBC"/>
+  <ellipse cx="125" cy="80" rx="22" ry="42" fill="#FFAB91"/>
+  <ellipse cx="125" cy="80" rx="12" ry="25" fill="#FFCCBC"/>
+  <path d="M28,60 Q35,80 28,100" stroke="#E0A090" stroke-width="2" fill="none"/>
+  <path d="M132,60 Q125,80 132,100" stroke="#E0A090" stroke-width="2" fill="none"/>
+</svg>`,
+
+// Nose
+'nose': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="30" ry="8" fill="#5A4A3A" opacity="0.12"/>
+  <path d="M80,30 Q60,80 50,120 Q80,135 110,120 Q100,80 80,30" fill="#FFCCBC"/>
+  <path d="M80,35 Q63,80 55,115 Q80,128 105,115 Q97,80 80,35" fill="#FFAB91"/>
+  <ellipse cx="65" cy="115" rx="10" ry="8" fill="#FFCCBC"/>
+  <ellipse cx="95" cy="115" rx="10" ry="8" fill="#FFCCBC"/>
+  <circle cx="65" cy="115" r="4" fill="#BF8070"/>
+  <circle cx="95" cy="115" r="4" fill="#BF8070"/>
+</svg>`,
+
+// Mouth
+'mouth': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <path d="M30,70 Q80,50 130,70 Q80,130 30,70" fill="#E57373"/>
+  <path d="M35,72 Q80,55 125,72 Q80,120 35,72" fill="#EF5350"/>
+  <path d="M45,75 Q80,65 115,75" stroke="white" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <path d="M55,78 Q80,72 105,78" stroke="white" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <ellipse cx="80" cy="100" rx="25" ry="15" fill="#C62828"/>
+</svg>`,
+
+// Hands
+'hands': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="55" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <ellipse cx="50" cy="95" rx="30" ry="35" fill="#FFCCBC"/>
+  <ellipse cx="50" cy="95" rx="27" ry="32" fill="#FFAB91"/>
+  <ellipse cx="30" cy="55" rx="8" ry="22" fill="#FFCCBC" transform="rotate(-15,30,55)"/>
+  <ellipse cx="42" cy="48" rx="7" ry="20" fill="#FFCCBC" transform="rotate(-5,42,48)"/>
+  <ellipse cx="55" cy="45" rx="7" ry="20" fill="#FFCCBC"/>
+  <ellipse cx="68" cy="50" rx="7" ry="18" fill="#FFCCBC" transform="rotate(10,68,50)"/>
+  <ellipse cx="78" cy="65" rx="6" ry="15" fill="#FFCCBC" transform="rotate(25,78,65)"/>
+  <ellipse cx="110" cy="95" rx="30" ry="35" fill="#FFCCBC"/>
+  <ellipse cx="110" cy="95" rx="27" ry="32" fill="#FFAB91"/>
+  <ellipse cx="130" cy="55" rx="8" ry="22" fill="#FFCCBC" transform="rotate(15,130,55)"/>
+  <ellipse cx="118" cy="48" rx="7" ry="20" fill="#FFCCBC" transform="rotate(5,118,48)"/>
+  <ellipse cx="105" cy="45" rx="7" ry="20" fill="#FFCCBC"/>
+  <ellipse cx="92" cy="50" rx="7" ry="18" fill="#FFCCBC" transform="rotate(-10,92,50)"/>
+  <ellipse cx="82" cy="65" rx="6" ry="15" fill="#FFCCBC" transform="rotate(-25,82,65)"/>
+</svg>`,
+
+// Feet
+'feet': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="60" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <ellipse cx="50" cy="100" rx="35" ry="40" fill="#FFCCBC"/>
+  <ellipse cx="50" cy="100" rx="32" ry="37" fill="#FFAB91"/>
+  <ellipse cx="25" cy="60" rx="10" ry="12" fill="#FFCCBC"/>
+  <ellipse cx="38" cy="55" rx="9" ry="11" fill="#FFCCBC"/>
+  <ellipse cx="52" cy="52" rx="9" ry="11" fill="#FFCCBC"/>
+  <ellipse cx="66" cy="55" rx="9" ry="11" fill="#FFCCBC"/>
+  <ellipse cx="78" cy="62" rx="8" ry="10" fill="#FFCCBC"/>
+  <ellipse cx="110" cy="100" rx="35" ry="40" fill="#FFCCBC"/>
+  <ellipse cx="110" cy="100" rx="32" ry="37" fill="#FFAB91"/>
+  <ellipse cx="135" cy="60" rx="10" ry="12" fill="#FFCCBC"/>
+  <ellipse cx="122" cy="55" rx="9" ry="11" fill="#FFCCBC"/>
+  <ellipse cx="108" cy="52" rx="9" ry="11" fill="#FFCCBC"/>
+  <ellipse cx="94" cy="55" rx="9" ry="11" fill="#FFCCBC"/>
+  <ellipse cx="82" cy="62" rx="8" ry="10" fill="#FFCCBC"/>
+</svg>`,
+
+// Arms
+'arms': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="55" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <path d="M25,40 Q15,80 30,120" stroke="#FFAB91" stroke-width="25" fill="none" stroke-linecap="round"/>
+  <path d="M135,40 Q145,80 130,120" stroke="#FFAB91" stroke-width="25" fill="none" stroke-linecap="round"/>
+  <ellipse cx="30" cy="125" rx="15" ry="18" fill="#FFCCBC"/>
+  <ellipse cx="130" cy="125" rx="15" ry="18" fill="#FFCCBC"/>
+  <circle cx="80" cy="80" r="30" fill="#42A5F5"/>
+  <path d="M60,75 Q80,65 100,75" stroke="white" stroke-width="3" fill="none"/>
+  <circle cx="70" cy="85" r="4" fill="white"/>
+  <circle cx="90" cy="85" r="4" fill="white"/>
+</svg>`,
+
+// Legs
+'legs': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="55" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <rect x="45" y="20" width="28" height="90" rx="14" fill="#FFAB91"/>
+  <rect x="87" y="20" width="28" height="90" rx="14" fill="#FFAB91"/>
+  <ellipse cx="59" cy="120" rx="20" ry="15" fill="#FFCCBC"/>
+  <ellipse cx="101" cy="120" rx="20" ry="15" fill="#FFCCBC"/>
+  <rect x="35" y="5" width="90" height="25" rx="8" fill="#42A5F5"/>
+</svg>`,
+
+// Tummy
+'tummy': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="45" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <ellipse cx="80" cy="85" rx="55" ry="50" fill="#FFCCBC"/>
+  <ellipse cx="80" cy="85" rx="52" ry="47" fill="#FFAB91"/>
+  <circle cx="80" cy="85" r="8" fill="#FFCCBC"/>
+  <circle cx="80" cy="85" r="5" fill="#E0A090"/>
+  <path d="M50,60 Q80,50 110,60" stroke="#FFCCBC" stroke-width="3" fill="none"/>
+  <path d="M45,100 Q80,115 115,100" stroke="#FFCCBC" stroke-width="3" fill="none"/>
+</svg>`,
+
+// ═══════════════════════════════════════════════
+//  ACTION ILLUSTRATIONS
+// ═══════════════════════════════════════════════
+
+// Jump
+'jump': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="30" ry="6" fill="#5A4A3A" opacity="0.12"/>
+  <circle cx="80" cy="35" r="18" fill="#8D6E63"/>
+  <ellipse cx="80" cy="70" rx="20" ry="25" fill="#66BB6A"/>
+  <path d="M60,60 Q40,50 35,70" stroke="#FFAB91" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <path d="M100,60 Q120,50 125,70" stroke="#FFAB91" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <path d="M70,90 Q60,115 50,125" stroke="#42A5F5" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <path d="M90,90 Q100,115 110,125" stroke="#42A5F5" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <circle cx="74" cy="32" r="3" fill="#3E2723"/>
+  <circle cx="86" cy="32" r="3" fill="#3E2723"/>
+  <path d="M75,42 Q80,46 85,42" stroke="#5D4037" stroke-width="2" fill="none"/>
+</svg>`,
+
+// Run
+'run': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="50" ry="8" fill="#5A4A3A" opacity="0.12"/>
+  <circle cx="70" cy="35" r="18" fill="#8D6E63"/>
+  <ellipse cx="80" cy="75" rx="22" ry="28" fill="#E53935" transform="rotate(-15,80,75)"/>
+  <path d="M55,65 Q25,55 20,75" stroke="#FFAB91" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <path d="M95,60 Q120,45 135,55" stroke="#FFAB91" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <path d="M65,95 Q45,115 30,135" stroke="#42A5F5" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <path d="M90,95 Q115,105 130,95" stroke="#42A5F5" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <circle cx="64" cy="32" r="3" fill="#3E2723"/>
+  <circle cx="76" cy="32" r="3" fill="#3E2723"/>
+</svg>`,
+
+// Walk
+'walk': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="40" ry="8" fill="#5A4A3A" opacity="0.12"/>
+  <circle cx="80" cy="30" r="18" fill="#8D6E63"/>
+  <ellipse cx="80" cy="70" rx="20" ry="28" fill="#FDD835"/>
+  <path d="M60,55 Q45,60 40,75" stroke="#FFAB91" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <path d="M100,55 Q115,60 120,75" stroke="#FFAB91" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <path d="M70,95 Q60,115 55,140" stroke="#42A5F5" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <path d="M90,95 Q100,115 105,140" stroke="#42A5F5" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <circle cx="74" cy="27" r="3" fill="#3E2723"/>
+  <circle cx="86" cy="27" r="3" fill="#3E2723"/>
+  <path d="M75,37 Q80,40 85,37" stroke="#5D4037" stroke-width="2" fill="none"/>
+</svg>`,
+
+// Sit
+'sit': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <rect x="30" y="90" width="100" height="50" rx="8" fill="#8D6E63"/>
+  <rect x="35" y="95" width="90" height="40" rx="6" fill="#A1887F"/>
+  <circle cx="80" cy="50" r="20" fill="#5D4037"/>
+  <ellipse cx="80" cy="85" rx="22" ry="25" fill="#9C27B0"/>
+  <path d="M55,75 Q40,70 35,85" stroke="#FFAB91" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <path d="M105,75 Q120,70 125,85" stroke="#FFAB91" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <path d="M65,105 Q50,115 45,140" stroke="#42A5F5" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <path d="M95,105 Q110,115 115,140" stroke="#42A5F5" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <circle cx="74" cy="47" r="3" fill="#3E2723"/>
+  <circle cx="86" cy="47" r="3" fill="#3E2723"/>
+</svg>`,
+
+// Sleep
+'sleep': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <rect x="15" y="75" width="130" height="65" rx="10" fill="#E3F2FD"/>
+  <rect x="20" y="80" width="120" height="55" rx="8" fill="#BBDEFB"/>
+  <ellipse cx="60" cy="90" rx="30" ry="25" fill="#FFCCBC"/>
+  <ellipse cx="60" cy="100" rx="25" ry="18" fill="#E3F2FD"/>
+  <path d="M45,85 Q60,80 75,85" stroke="#5D4037" stroke-width="2" fill="none"/>
+  <path d="M50,92 Q60,88 70,92" stroke="#5D4037" stroke-width="2" fill="none"/>
+  <ellipse cx="60" cy="95" rx="4" ry="2" fill="#E57373"/>
+  <path d="M48,100 Q60,108 72,100" stroke="#E57373" stroke-width="2" fill="none"/>
+  <text x="100" y="60" font-family="Nunito" font-size="20" font-weight="900" fill="#42A5F5">Z</text>
+  <text x="115" y="45" font-family="Nunito" font-size="16" font-weight="900" fill="#42A5F5">Z</text>
+  <text x="125" y="35" font-family="Nunito" font-size="12" font-weight="900" fill="#42A5F5">Z</text>
+</svg>`,
+
+// Clap
+'clap': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="35" ry="8" fill="#5A4A3A" opacity="0.12"/>
+  <ellipse cx="65" cy="70" rx="25" ry="30" fill="#FFCCBC"/>
+  <ellipse cx="95" cy="70" rx="25" ry="30" fill="#FFCCBC"/>
+  <ellipse cx="50" cy="40" rx="8" ry="18" fill="#FFCCBC" transform="rotate(-20,50,40)"/>
+  <ellipse cx="60" cy="35" rx="7" ry="16" fill="#FFCCBC" transform="rotate(-10,60,35)"/>
+  <ellipse cx="70" cy="32" rx="7" ry="16" fill="#FFCCBC"/>
+  <ellipse cx="90" cy="32" rx="7" ry="16" fill="#FFCCBC"/>
+  <ellipse cx="100" cy="35" rx="7" ry="16" fill="#FFCCBC" transform="rotate(10,100,35)"/>
+  <ellipse cx="110" cy="40" rx="8" ry="18" fill="#FFCCBC" transform="rotate(20,110,40)"/>
+  <line x1="45" y1="90" x2="35" y2="100" stroke="#FDD835" stroke-width="4" stroke-linecap="round"/>
+  <line x1="115" y1="90" x2="125" y2="100" stroke="#FDD835" stroke-width="4" stroke-linecap="round"/>
+  <line x1="80" y1="105" x2="80" y2="118" stroke="#FDD835" stroke-width="4" stroke-linecap="round"/>
+  <line x1="60" y1="100" x2="50" y2="115" stroke="#FDD835" stroke-width="4" stroke-linecap="round"/>
+  <line x1="100" y1="100" x2="110" y2="115" stroke="#FDD835" stroke-width="4" stroke-linecap="round"/>
+</svg>`,
+
+// Wave
+'wave': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="35" ry="8" fill="#5A4A3A" opacity="0.12"/>
+  <circle cx="80" cy="95" r="30" fill="#42A5F5"/>
+  <circle cx="80" cy="50" r="22" fill="#8D6E63"/>
+  <ellipse cx="95" cy="30" rx="8" ry="22" fill="#FFCCBC" transform="rotate(15,95,30)"/>
+  <ellipse cx="105" cy="25" rx="7" ry="18" fill="#FFCCBC" transform="rotate(25,105,25)"/>
+  <ellipse cx="115" cy="28" rx="6" ry="15" fill="#FFCCBC" transform="rotate(35,115,28)"/>
+  <ellipse cx="122" cy="35" rx="6" ry="14" fill="#FFCCBC" transform="rotate(45,122,35)"/>
+  <ellipse cx="127" cy="48" rx="5" ry="12" fill="#FFCCBC" transform="rotate(55,127,48)"/>
+  <ellipse cx="100" cy="55" rx="20" ry="25" fill="#FFCCBC" transform="rotate(30,100,55)"/>
+  <path d="M60,80 Q45,85 40,100" stroke="#FFAB91" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <circle cx="74" cy="47" r="3" fill="#3E2723"/>
+  <circle cx="86" cy="47" r="3" fill="#3E2723"/>
+  <path d="M75,57 Q80,62 85,57" stroke="#5D4037" stroke-width="2" fill="none"/>
+</svg>`,
+
+// Dance
+'dance': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="50" ry="8" fill="#5A4A3A" opacity="0.12"/>
+  <circle cx="80" cy="30" r="18" fill="#5D4037"/>
+  <ellipse cx="80" cy="70" rx="18" ry="25" fill="#E91E63"/>
+  <path d="M62,55 Q35,40 30,60" stroke="#FFAB91" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <path d="M98,55 Q125,40 130,60" stroke="#FFAB91" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <path d="M70,90 Q50,110 35,135" stroke="#42A5F5" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <path d="M90,90 Q110,110 125,135" stroke="#42A5F5" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <circle cx="74" cy="27" r="3" fill="#3E2723"/>
+  <circle cx="86" cy="27" r="3" fill="#3E2723"/>
+  <path d="M74,37 Q80,42 86,37" stroke="#5D4037" stroke-width="2" fill="none"/>
+  <path d="M45,20 Q50,10 55,15" stroke="#FDD835" stroke-width="3" fill="none"/>
+  <path d="M105,15 Q110,5 118,12" stroke="#FDD835" stroke-width="3" fill="none"/>
+</svg>`,
+
+// Eat
+'eat': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="50" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <ellipse cx="80" cy="115" rx="50" ry="25" fill="#E0E0E0"/>
+  <ellipse cx="80" cy="110" rx="45" ry="20" fill="#F5F5F5"/>
+  <circle cx="65" cy="108" r="12" fill="#66BB6A"/>
+  <circle cx="90" cy="105" r="10" fill="#FF7043"/>
+  <ellipse cx="75" cy="115" rx="8" ry="5" fill="#FDD835"/>
+  <circle cx="80" cy="40" r="25" fill="#8D6E63"/>
+  <ellipse cx="80" cy="75" rx="20" ry="15" fill="#42A5F5"/>
+  <path d="M100,55 Q120,60 115,85 Q110,95 105,95" stroke="#FFAB91" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <rect x="105" y="85" width="6" height="35" rx="2" fill="#9E9E9E"/>
+  <ellipse cx="108" cy="85" rx="8" ry="12" fill="#9E9E9E"/>
+  <circle cx="73" cy="37" r="3" fill="#3E2723"/>
+  <circle cx="87" cy="37" r="3" fill="#3E2723"/>
+  <ellipse cx="80" cy="48" rx="8" ry="5" fill="#3E2723"/>
+</svg>`,
+
+// Drink
+'drink': `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="145" rx="40" ry="10" fill="#5A4A3A" opacity="0.12"/>
+  <circle cx="65" cy="55" r="25" fill="#8D6E63"/>
+  <ellipse cx="70" cy="95" rx="22" ry="28" fill="#66BB6A"/>
+  <path d="M48,80 Q30,75 25,90" stroke="#FFAB91" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <path d="M88,70 Q110,50 120,55" stroke="#FFAB91" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <path d="M95,45 L100,90 Q100,105 115,105 Q130,105 130,90 L135,45 Z" fill="#E3F2FD" opacity="0.8"/>
+  <path d="M98,55 L102,85 Q102,100 115,100 Q128,100 128,85 L132,55 Z" fill="#42A5F5" opacity="0.7"/>
+  <circle cx="58" cy="52" r="3" fill="#3E2723"/>
+  <circle cx="72" cy="52" r="3" fill="#3E2723"/>
+  <ellipse cx="65" cy="62" rx="6" ry="4" fill="#3E2723"/>
+</svg>`,
 
 // ─── ROCKET ───────────────────────────────────────────────────
 car:`<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
@@ -2472,9 +3657,9 @@ rocket:`<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
 };
 
 // ═══════════════════════════════════════════════
-//  CARD DATA
+//  CARD DATA - WORDS (Original Activity)
 // ═══════════════════════════════════════════════
-const CARDS = [
+const WORD_CARDS = [
   { id:'cat',    word:'CAT',    syllables:['CAT'],        phonetic:'/kæt/',        stage:1 },
   { id:'sun',    word:'SUN',    syllables:['SUN'],        phonetic:'/sʌn/',        stage:1 },
   { id:'dog',    word:'DOG',    syllables:['DOG'],        phonetic:'/dɒɡ/',        stage:1 },
@@ -2524,6 +3709,220 @@ const CARDS = [
   { id:'yoyo',   word:'YO-YO',   syllables:['YO','YO'],    phonetic:'/ˈjoʊ.joʊ/',   stage:2 },
   { id:'zoo',    word:'ZOO',    syllables:['ZOO'],        phonetic:'/zuː/',        stage:2 },
 ];
+
+// ═══════════════════════════════════════════════
+//  CARD DATA - NUMBERS (Counting 1-10)
+// ═══════════════════════════════════════════════
+const NUMBER_CARDS = [
+  { id:'one',   word:'ONE',   syllables:['ONE'],   phonetic:'/wʌn/',   stage:1, count:1 },
+  { id:'two',   word:'TWO',   syllables:['TWO'],   phonetic:'/tuː/',   stage:1, count:2 },
+  { id:'three', word:'THREE', syllables:['THREE'], phonetic:'/θriː/',  stage:1, count:3 },
+  { id:'four',  word:'FOUR',  syllables:['FOUR'],  phonetic:'/fɔːr/',  stage:1, count:4 },
+  { id:'five',  word:'FIVE',  syllables:['FIVE'],  phonetic:'/faɪv/',  stage:1, count:5 },
+  { id:'six',   word:'SIX',   syllables:['SIX'],   phonetic:'/sɪks/',  stage:1, count:6 },
+  { id:'seven', word:'SEVEN', syllables:['SEV','EN'], phonetic:'/ˈsɛv.ən/', stage:1, count:7 },
+  { id:'eight', word:'EIGHT', syllables:['EIGHT'], phonetic:'/eɪt/',   stage:1, count:8 },
+  { id:'nine',  word:'NINE',  syllables:['NINE'],  phonetic:'/naɪn/',  stage:1, count:9 },
+  { id:'ten',   word:'TEN',   syllables:['TEN'],   phonetic:'/tɛn/',   stage:1, count:10 },
+];
+
+// ═══════════════════════════════════════════════
+//  CARD DATA - COLORS
+// ═══════════════════════════════════════════════
+const COLOR_CARDS = [
+  { id:'red',    word:'RED',    syllables:['RED'],    phonetic:'/rɛd/',    stage:1, hex:'#E53935' },
+  { id:'blue',   word:'BLUE',   syllables:['BLUE'],   phonetic:'/bluː/',   stage:1, hex:'#1E88E5' },
+  { id:'yellow', word:'YELLOW', syllables:['YEL','LOW'], phonetic:'/ˈjɛl.oʊ/', stage:1, hex:'#FDD835' },
+  { id:'green',  word:'GREEN',  syllables:['GREEN'],  phonetic:'/ɡriːn/',  stage:1, hex:'#66BB6A' },
+  { id:'orange', word:'ORANGE', syllables:['OR','ANGE'], phonetic:'/ˈɔr.ɪndʒ/', stage:1, hex:'#FF9800' },
+  { id:'purple', word:'PURPLE', syllables:['PUR','PLE'], phonetic:'/ˈpɜːr.pəl/', stage:1, hex:'#9C27B0' },
+  { id:'pink',   word:'PINK',   syllables:['PINK'],   phonetic:'/pɪŋk/',   stage:1, hex:'#F48FB1' },
+  { id:'brown',  word:'BROWN',  syllables:['BROWN'],  phonetic:'/braʊn/',  stage:1, hex:'#8D6E63' },
+];
+
+// ═══════════════════════════════════════════════
+//  CARD DATA - SHAPES
+// ═══════════════════════════════════════════════
+const SHAPE_CARDS = [
+  { id:'circle',    word:'CIRCLE',    syllables:['CIR','CLE'],   phonetic:'/ˈsɜːr.kəl/',   stage:1 },
+  { id:'square',    word:'SQUARE',    syllables:['SQUARE'],      phonetic:'/skwɛr/',       stage:1 },
+  { id:'triangle',  word:'TRIANGLE',  syllables:['TRI','AN','GLE'], phonetic:'/ˈtraɪ.æŋ.ɡəl/', stage:1 },
+  { id:'rectangle', word:'RECTANGLE', syllables:['REC','TAN','GLE'], phonetic:'/ˈrɛk.tæŋ.ɡəl/', stage:1 },
+  { id:'shape-star', word:'STAR',     syllables:['STAR'],        phonetic:'/stɑːr/',       stage:1 },
+  { id:'heart',     word:'HEART',     syllables:['HEART'],       phonetic:'/hɑːrt/',       stage:1 },
+];
+
+// ═══════════════════════════════════════════════
+//  CARD DATA - PHRASES (Daily Routines)
+// ═══════════════════════════════════════════════
+const PHRASE_CARDS = [
+  { id:'goodmorning', word:'GOOD MORNING', syllables:['GOOD','MOR','NING'], phonetic:'/ɡʊd ˈmɔːr.nɪŋ/', stage:1 },
+  { id:'brushteeth',  word:'BRUSH YOUR TEETH', syllables:['BRUSH','YOUR','TEETH'], phonetic:'/brʌʃ jɔːr tiːθ/', stage:1 },
+  { id:'washhands',   word:'WASH YOUR HANDS', syllables:['WASH','YOUR','HANDS'], phonetic:'/wɒʃ jɔːr hændz/', stage:1 },
+  { id:'timeforbed',  word:'TIME FOR BED', syllables:['TIME','FOR','BED'], phonetic:'/taɪm fɔːr bɛd/', stage:1 },
+  { id:'eatfood',     word:'EAT YOUR FOOD', syllables:['EAT','YOUR','FOOD'], phonetic:'/iːt jɔːr fuːd/', stage:1 },
+  { id:'sayhello',    word:'SAY HELLO', syllables:['SAY','HEL','LO'], phonetic:'/seɪ həˈloʊ/', stage:1 },
+  { id:'drinkwater',  word:'DRINK WATER', syllables:['DRINK','WA','TER'], phonetic:'/drɪŋk ˈwɔː.tər/', stage:1 },
+  { id:'sayplease',   word:'SAY PLEASE', syllables:['SAY','PLEASE'], phonetic:'/seɪ pliːz/', stage:1 },
+  { id:'thankyou',    word:'THANK YOU', syllables:['THANK','YOU'], phonetic:'/θæŋk juː/', stage:1 },
+  { id:'iloveyou',    word:'I LOVE YOU', syllables:['I','LOVE','YOU'], phonetic:'/aɪ lʌv juː/', stage:1 },
+  { id:'cleanup',     word:'CLEAN UP', syllables:['CLEAN','UP'], phonetic:'/kliːn ʌp/', stage:1 },
+  { id:'timetoplay',  word:'TIME TO PLAY', syllables:['TIME','TO','PLAY'], phonetic:'/taɪm tuː pleɪ/', stage:1 },
+];
+
+// ═══════════════════════════════════════════════
+//  CARD DATA - ANIMALS
+// ═══════════════════════════════════════════════
+const ANIMAL_CARDS = [
+  // Stage 1: One-syllable animals (from words + new)
+  { id:'cat',          word:'CAT',       syllables:['CAT'],        phonetic:'/kæt/',         stage:1 },
+  { id:'dog',          word:'DOG',       syllables:['DOG'],        phonetic:'/dɒɡ/',         stage:1 },
+  { id:'fish-animal',  word:'FISH',      syllables:['FISH'],       phonetic:'/fɪʃ/',         stage:1 },
+  { id:'bird',         word:'BIRD',      syllables:['BIRD'],       phonetic:'/bɜːrd/',       stage:1 },
+  { id:'frog',         word:'FROG',      syllables:['FROG'],       phonetic:'/frɒɡ/',        stage:1 },
+  { id:'bear',         word:'BEAR',      syllables:['BEAR'],       phonetic:'/bɛr/',         stage:1 },
+  { id:'duck',         word:'DUCK',      syllables:['DUCK'],       phonetic:'/dʌk/',         stage:1 },
+  { id:'goat',         word:'GOAT',      syllables:['GOAT'],       phonetic:'/ɡoʊt/',        stage:1 },
+  { id:'owl',          word:'OWL',       syllables:['OWL'],        phonetic:'/aʊl/',         stage:1 },
+  { id:'pig',          word:'PIG',       syllables:['PIG'],        phonetic:'/pɪɡ/',         stage:1 },
+  { id:'cow',          word:'COW',       syllables:['COW'],        phonetic:'/kaʊ/',         stage:1 },
+  { id:'sheep',        word:'SHEEP',     syllables:['SHEEP'],      phonetic:'/ʃiːp/',        stage:1 },
+  { id:'horse',        word:'HORSE',     syllables:['HORSE'],      phonetic:'/hɔːrs/',       stage:1 },
+  // Stage 2: Two-syllable animals
+  { id:'lion',         word:'LION',      syllables:['LI','ON'],    phonetic:'/ˈlaɪ.ən/',     stage:2 },
+  { id:'rabbit',       word:'RABBIT',    syllables:['RAB','BIT'],  phonetic:'/ˈræb.ɪt/',     stage:2 },
+  { id:'turtle',       word:'TURTLE',    syllables:['TUR','TLE'],  phonetic:'/ˈtɜːr.tl/',    stage:2 },
+  { id:'monkey',       word:'MONKEY',    syllables:['MON','KEY'],  phonetic:'/ˈmʌŋ.ki/',     stage:2 },
+  { id:'kitten',       word:'KITTEN',    syllables:['KIT','TEN'],  phonetic:'/ˈkɪt.ən/',     stage:2 },
+  { id:'chicken',      word:'CHICKEN',   syllables:['CHIC','KEN'], phonetic:'/ˈtʃɪk.ɪn/',    stage:2 },
+  // Stage 3: Three-syllable animals
+  { id:'elephant',     word:'ELEPHANT',  syllables:['EL','E','PHANT'], phonetic:'/ˈɛl.ɪ.fənt/', stage:3 },
+  { id:'butterfly',    word:'BUTTERFLY', syllables:['BUT','TER','FLY'], phonetic:'/ˈbʌt.ər.flaɪ/', stage:3 },
+  { id:'ladybug',      word:'LADYBUG',   syllables:['LA','DY','BUG'], phonetic:'/ˈleɪ.di.bʌɡ/', stage:3 },
+];
+
+// ═══════════════════════════════════════════════
+//  CARD DATA - BODY PARTS
+// ═══════════════════════════════════════════════
+const BODY_CARDS = [
+  { id:'head',    word:'HEAD',    syllables:['HEAD'],      phonetic:'/hɛd/',        stage:1 },
+  { id:'eyes',    word:'EYES',    syllables:['EYES'],      phonetic:'/aɪz/',        stage:1 },
+  { id:'ears',    word:'EARS',    syllables:['EARS'],      phonetic:'/ɪərz/',       stage:1 },
+  { id:'nose',    word:'NOSE',    syllables:['NOSE'],      phonetic:'/noʊz/',       stage:1 },
+  { id:'mouth',   word:'MOUTH',   syllables:['MOUTH'],     phonetic:'/maʊθ/',       stage:1 },
+  { id:'hands',   word:'HANDS',   syllables:['HANDS'],     phonetic:'/hændz/',      stage:1 },
+  { id:'feet',    word:'FEET',    syllables:['FEET'],      phonetic:'/fiːt/',       stage:1 },
+  { id:'arms',    word:'ARMS',    syllables:['ARMS'],      phonetic:'/ɑːrmz/',      stage:1 },
+  { id:'legs',    word:'LEGS',    syllables:['LEGS'],      phonetic:'/lɛɡz/',       stage:1 },
+  { id:'tummy',   word:'TUMMY',   syllables:['TUM','MY'],  phonetic:'/ˈtʌm.i/',     stage:2 },
+];
+
+// ═══════════════════════════════════════════════
+//  CARD DATA - ACTIONS
+// ═══════════════════════════════════════════════
+const ACTION_CARDS = [
+  { id:'jump',    word:'JUMP',    syllables:['JUMP'],      phonetic:'/dʒʌmp/',      stage:1 },
+  { id:'run',     word:'RUN',     syllables:['RUN'],       phonetic:'/rʌn/',        stage:1 },
+  { id:'walk',    word:'WALK',    syllables:['WALK'],      phonetic:'/wɔːk/',       stage:1 },
+  { id:'sit',     word:'SIT',     syllables:['SIT'],       phonetic:'/sɪt/',        stage:1 },
+  { id:'sleep',   word:'SLEEP',   syllables:['SLEEP'],     phonetic:'/sliːp/',      stage:1 },
+  { id:'clap',    word:'CLAP',    syllables:['CLAP'],      phonetic:'/klæp/',       stage:1 },
+  { id:'wave',    word:'WAVE',    syllables:['WAVE'],      phonetic:'/weɪv/',       stage:1 },
+  { id:'dance',   word:'DANCE',   syllables:['DANCE'],     phonetic:'/dæns/',       stage:1 },
+  { id:'eat',     word:'EAT',     syllables:['EAT'],       phonetic:'/iːt/',        stage:1 },
+  { id:'drink',   word:'DRINK',   syllables:['DRINK'],     phonetic:'/drɪŋk/',      stage:1 },
+];
+
+// ═══════════════════════════════════════════════
+//  ACTIVITIES CONFIGURATION
+// ═══════════════════════════════════════════════
+const ACTIVITIES = {
+  words: {
+    id: 'words',
+    name: 'Words',
+    icon: 'icon-words',
+    color: '#2CC5BD',
+    description: 'Learn first words',
+    cards: WORD_CARDS,
+    stageLabels: { 1: 'Stage 1 · One-Syllable Words', 2: 'Stage 2 · Two-Syllable Words' }
+  },
+  phrases: {
+    id: 'phrases',
+    name: 'Phrases',
+    icon: 'icon-phrases',
+    color: '#F5A623',
+    description: 'Daily routines',
+    cards: PHRASE_CARDS,
+    stageLabels: { 1: 'Everyday Phrases' }
+  },
+  numbers: {
+    id: 'numbers',
+    name: 'Numbers',
+    icon: 'icon-numbers',
+    color: '#8DC63F',
+    description: 'Count 1-10',
+    cards: NUMBER_CARDS,
+    stageLabels: { 1: 'Counting Numbers' }
+  },
+  colors: {
+    id: 'colors',
+    name: 'Colors',
+    icon: 'icon-colors',
+    color: '#A67BB5',
+    description: 'Learn colors',
+    cards: COLOR_CARDS,
+    stageLabels: { 1: 'Basic Colors' }
+  },
+  shapes: {
+    id: 'shapes',
+    name: 'Shapes',
+    icon: 'icon-shapes',
+    color: '#C46B4A',
+    description: 'Basic shapes',
+    cards: SHAPE_CARDS,
+    stageLabels: { 1: 'Basic Shapes' }
+  },
+  animals: {
+    id: 'animals',
+    name: 'Animals',
+    icon: 'icon-animals',
+    color: '#7FA87E',
+    description: 'Animal friends',
+    cards: ANIMAL_CARDS,
+    stageLabels: { 1: 'One-Syllable Animals', 2: 'Two-Syllable Animals', 3: 'Three-Syllable Animals' }
+  },
+  bodyparts: {
+    id: 'bodyparts',
+    name: 'Body',
+    icon: 'icon-bodyparts',
+    color: '#E8C8A0',
+    description: 'Head to toe',
+    cards: BODY_CARDS,
+    stageLabels: { 1: 'Body Parts', 2: 'More Body Parts' }
+  },
+  actions: {
+    id: 'actions',
+    name: 'Actions',
+    icon: 'icon-actions',
+    color: '#FF6B6B',
+    description: 'Jump & play',
+    cards: ACTION_CARDS,
+    stageLabels: { 1: 'Action Words' }
+  }
+};
+
+// ═══════════════════════════════════════════════
+//  NAVIGATION STATE
+// ═══════════════════════════════════════════════
+const AppState = {
+  screen: 'home',           // 'home' | 'activity'
+  currentActivity: null,    // ACTIVITIES key
+  currentDeck: [],
+  currentIndex: 0,
+  history: [],
+  isAnimating: false,
+  isAlphabetMode: false
+};
 
 // ═══════════════════════════════════════════════
 //  AUDIO
@@ -2767,23 +4166,20 @@ function toggleAudio() {
   const btn = document.getElementById('audioBtn');
   btn.classList.toggle('muted', !audioOn);
   
-  if (audioOn) {
-    speakCard(CARDS[currentIndex]);
-  } else { 
+  if (audioOn && AppState.screen === 'activity' && AppState.currentDeck.length > 0) {
+    speakCard(AppState.currentDeck[AppState.currentIndex]);
+  } else {
     stopCurrentAudio();
     btn.classList.remove('speaking');
-    stopBgMusic(); 
+    stopBgMusic();
   }
 }
 
 // ═══════════════════════════════════════════════
 //  STATE & RENDER
 // ═══════════════════════════════════════════════
-let fullDeck = CARDS;
-let currentDeck = CARDS;
-let currentIndex = 0, history = [], isAnimating = false;
-let isAlphabetMode = false;
-const STAGE_LABELS = { 1:'Stage 1 · One-Syllable Words', 2:'Stage 2 · Two-Syllable Words' };
+// Legacy variables removed - now using AppState
+
 const AVAILABLE_AUDIOS = new Set([
   'Apple','Baby','Ball','Basket','Bear','Bird','Boat','Book','Candle','Cat',
   'Cup','Dog','Drum','Flower','Frog','Hand','Hat','Kitten','Leaf','Monkey',
@@ -2792,8 +4188,90 @@ const AVAILABLE_AUDIOS = new Set([
 
 const preloadedAudios = {};
 
+// ═══════════════════════════════════════════════
+//  NAVIGATION FUNCTIONS
+// ═══════════════════════════════════════════════
+function renderHomeScreen() {
+  const grid = document.getElementById('homeGrid');
+  grid.innerHTML = '';
+
+  Object.values(ACTIVITIES).forEach(activity => {
+    // Skip activities with no cards (coming soon)
+    const isAvailable = activity.cards.length > 0;
+
+    const card = document.createElement('div');
+    card.className = 'activity-card';
+    card.style.borderColor = activity.color;
+    if (!isAvailable) {
+      card.style.opacity = '0.5';
+      card.style.cursor = 'default';
+    }
+
+    card.innerHTML = `
+      <div class="activity-icon">${SVG[activity.icon] || ''}</div>
+      <div class="activity-name" style="color:${activity.color}">${activity.name}</div>
+      <div class="activity-desc">${isAvailable ? activity.description : 'Coming soon'}</div>
+    `;
+
+    if (isAvailable) {
+      card.onclick = () => startActivity(activity.id);
+    }
+
+    grid.appendChild(card);
+  });
+
+  document.getElementById('homeContainer').style.display = 'flex';
+  document.getElementById('activityContainer').style.display = 'none';
+  document.getElementById('homeBtn').style.display = 'none';
+  document.getElementById('logoArea').style.display = 'flex';
+}
+
+function startActivity(activityId) {
+  const activity = ACTIVITIES[activityId];
+  if (!activity || activity.cards.length === 0) return;
+
+  AppState.screen = 'activity';
+  AppState.currentActivity = activity;
+  AppState.currentDeck = [...activity.cards];
+  AppState.currentIndex = 0;
+  AppState.history = [];
+  AppState.isAnimating = false;
+  AppState.isAlphabetMode = false;
+
+  document.getElementById('homeContainer').style.display = 'none';
+  document.getElementById('activityContainer').style.display = 'flex';
+  document.getElementById('homeBtn').style.display = 'flex';
+  document.getElementById('logoArea').style.display = 'none';
+
+  renderVine();
+  renderCards();
+  updateStageLabel();
+  updateHint();
+
+  // Speak first card after a small delay
+  setTimeout(() => {
+    if (AppState.currentDeck.length > 0) {
+      speakCard(AppState.currentDeck[0]);
+    }
+  }, 300);
+}
+
+function goHome() {
+  stopCurrentAudio();
+  stopBgMusic();
+
+  AppState.screen = 'home';
+  AppState.currentActivity = null;
+  AppState.currentDeck = [];
+  AppState.currentIndex = 0;
+  AppState.history = [];
+
+  renderHomeScreen();
+}
+
 function init() {
-  CARDS.forEach(card => {
+  // Preload audio files for words activity
+  WORD_CARDS.forEach(card => {
     const capitalized = card.word.charAt(0).toUpperCase() + card.word.slice(1).toLowerCase();
     if (AVAILABLE_AUDIOS.has(capitalized)) {
       const a = new Audio(`audios/${capitalized}.m4a`);
@@ -2801,17 +4279,17 @@ function init() {
       preloadedAudios[card.id] = a;
     }
   });
-  renderVine(); renderCards(); updateHint();
-  // Autoplay of speech is disabled on init to comply with browser policies.
-  // Speech begins once the user first advances or interacts with the app.
+  // Start at home screen
+  renderHomeScreen();
+  updateHint();
 }
 
 function renderVine() {
   const el = document.getElementById('progressVine');
   el.innerHTML = '';
-  currentDeck.forEach((_,i) => {
+  AppState.currentDeck.forEach((_,i) => {
     const d = document.createElement('div');
-    d.className = 'vine-dot' + (i < currentIndex ? ' done' : i === currentIndex ? ' active' : '');
+    d.className = 'vine-dot' + (i < AppState.currentIndex ? ' done' : i === AppState.currentIndex ? ' active' : '');
     el.appendChild(d);
   });
 }
@@ -2820,110 +4298,138 @@ function createCardEl(card, offset) {
   const el = document.createElement('div');
   el.className = 'flashcard ' + (offset === 0 ? 'top' : offset === 1 ? 'stack-2' : 'stack-3');
   if (offset === 0) el.id = 'topCard';
-  const syllHtml = card.syllables.length > 1
+  const syllHtml = card.syllables && card.syllables.length > 1
     ? `<div class="card-syllables">${card.syllables.map(s=>`<span class="syllable">${s}</span>`).join('')}</div>` : '';
+
+  // Handle different card types (stage info for words, just count for others)
+  const cornerText = card.stage ? (card.stage===1?'1 syllable':'2 syllables') : '';
+
   el.innerHTML = `
-    <div class="card-counter">${currentDeck.indexOf(card)+1} / ${currentDeck.length}</div>
-    <div class="card-corner">${card.stage===1?'1 syllable':'2 syllables'}</div>
+    <div class="card-counter">${AppState.currentDeck.indexOf(card)+1} / ${AppState.currentDeck.length}</div>
+    <div class="card-corner">${cornerText}</div>
     <div class="card-illustration">${SVG[card.id]||''}</div>
     <div class="card-word">${card.word}</div>
     ${syllHtml}
-    <div class="card-phonetic">${card.phonetic}</div>`;
+    <div class="card-phonetic">${card.phonetic || ''}</div>`;
   return el;
 }
 
 function updateStageLabel() {
   const lbl = document.getElementById('stageLabel');
-  const stage = currentDeck[currentIndex]?.stage;
-  if (lbl && stage) lbl.textContent = STAGE_LABELS[stage] || '';
+  if (!lbl || !AppState.currentActivity) return;
+
+  const card = AppState.currentDeck[AppState.currentIndex];
+  const stageLabels = AppState.currentActivity.stageLabels || {};
+  const stage = card?.stage || 1;
+  lbl.textContent = stageLabels[stage] || '';
 }
 
 function renderCards() {
   const arena = document.getElementById('cardArena');
   arena.innerHTML = '';
-  [2,1,0].forEach(off => { const i = currentIndex+off; if(i<currentDeck.length) arena.appendChild(createCardEl(currentDeck[i],off)); });
+  [2,1,0].forEach(off => {
+    const i = AppState.currentIndex+off;
+    if(i<AppState.currentDeck.length) arena.appendChild(createCardEl(AppState.currentDeck[i],off));
+  });
   updateStageLabel();
-  document.getElementById('undoBtn').disabled = history.length===0;
-  document.getElementById('nextBtn').disabled = currentIndex>=currentDeck.length;
+  document.getElementById('undoBtn').disabled = AppState.history.length===0;
+  document.getElementById('nextBtn').disabled = AppState.currentIndex>=AppState.currentDeck.length;
 }
 
 function nextCard() {
-  if (isAnimating || currentIndex >= currentDeck.length && document.getElementById('completeScreen').classList.contains('show')) return;
+  if (AppState.isAnimating || AppState.currentIndex >= AppState.currentDeck.length && document.getElementById('completeScreen').classList.contains('show')) return;
   const top = document.getElementById('topCard'); if (!top) return;
-  isAnimating = true; history.push(currentIndex); currentIndex++;
+  AppState.isAnimating = true;
+  AppState.history.push(AppState.currentIndex);
+  AppState.currentIndex++;
   updateStageLabel();
   top.classList.add('animating-out');
   document.querySelectorAll('.flashcard.stack-2').forEach(c=>c.classList.add('rising'));
-  
-  if (currentIndex < currentDeck.length) {
-    speakCard(currentDeck[currentIndex]);
+
+  if (AppState.currentIndex < AppState.currentDeck.length) {
+    speakCard(AppState.currentDeck[AppState.currentIndex]);
   } else {
-    speakCard(currentDeck[0]);
+    speakCard(AppState.currentDeck[0]);
   }
-  
+
   setTimeout(() => {
-    if (currentIndex >= currentDeck.length) {
-      currentIndex = 0;
-      history = [];
+    if (AppState.currentIndex >= AppState.currentDeck.length) {
+      AppState.currentIndex = 0;
+      AppState.history = [];
     }
-    renderCards(); 
-    renderVine(); 
-    isAnimating = false;
+    renderCards();
+    renderVine();
+    AppState.isAnimating = false;
   }, 480);
 }
 
 function undoCard() {
-  if (isAnimating || !history.length) return;
-  isAnimating = true; currentIndex = history.pop(); renderVine();
-  const arena = document.getElementById('cardArena'); arena.innerHTML='';
-  [2,1].forEach(off => { const i=currentIndex+off; if(i<currentDeck.length) arena.appendChild(createCardEl(currentDeck[i],off)); });
-  const top = createCardEl(currentDeck[currentIndex],0);
-  top.classList.add('animating-in'); arena.appendChild(top);
-  document.getElementById('stageLabel').textContent = STAGE_LABELS[currentDeck[currentIndex]?.stage]||'';
-  document.getElementById('undoBtn').disabled = !history.length;
+  if (AppState.isAnimating || !AppState.history.length) return;
+  AppState.isAnimating = true;
+  AppState.currentIndex = AppState.history.pop();
+  renderVine();
+  const arena = document.getElementById('cardArena');
+  arena.innerHTML='';
+  [2,1].forEach(off => {
+    const i=AppState.currentIndex+off;
+    if(i<AppState.currentDeck.length) arena.appendChild(createCardEl(AppState.currentDeck[i],off));
+  });
+  const top = createCardEl(AppState.currentDeck[AppState.currentIndex],0);
+  top.classList.add('animating-in');
+  arena.appendChild(top);
+  updateStageLabel();
+  document.getElementById('undoBtn').disabled = !AppState.history.length;
   document.getElementById('nextBtn').disabled = false;
-  speakCard(currentDeck[currentIndex]);
-  setTimeout(() => { isAnimating=false; }, 500);
+  speakCard(AppState.currentDeck[AppState.currentIndex]);
+  setTimeout(() => { AppState.isAnimating=false; }, 500);
 }
 
 function restartDeck() {
-  currentDeck = fullDeck;
-  isAlphabetMode = false;
-  currentIndex=0; history=[];
+  if (!AppState.currentActivity) return;
+  AppState.currentDeck = [...AppState.currentActivity.cards];
+  AppState.isAlphabetMode = false;
+  AppState.currentIndex = 0;
+  AppState.history = [];
   ['cardArena','completeScreen'].forEach(id => {
     const el = document.getElementById(id);
     if(id==='completeScreen') el.classList.remove('show'); else el.style.display='';
   });
   document.querySelector('.bottom-controls').style.display='';
   document.getElementById('hintText').style.display='';
-  renderVine(); renderCards(); speakCard(currentDeck[0]);
+  renderVine();
+  renderCards();
+  speakCard(AppState.currentDeck[0]);
 }
 
 document.addEventListener('keydown', e => {
-  // Alphabet cycling logic (PC only)
-  if (e.code.startsWith('Key')) {
+  // Only handle keyboard when in activity screen
+  if (AppState.screen !== 'activity') return;
+
+  // Alphabet cycling logic (PC only) - only for words activity
+  if (e.code.startsWith('Key') && AppState.currentActivity?.id === 'words') {
     const letter = e.key.toUpperCase();
+    const fullDeck = AppState.currentActivity.cards;
     const matches = fullDeck.filter(c => c.word.startsWith(letter));
     if (matches.length > 0) {
       e.preventDefault();
-      if (isAlphabetMode && currentDeck[0]?.word.startsWith(letter)) {
+      if (AppState.isAlphabetMode && AppState.currentDeck[0]?.word.startsWith(letter)) {
         // Cycle within existing filter
-        currentIndex = (currentIndex + 1) % currentDeck.length;
+        AppState.currentIndex = (AppState.currentIndex + 1) % AppState.currentDeck.length;
       } else {
         // New filter
-        currentDeck = matches;
-        currentIndex = 0;
-        isAlphabetMode = true;
+        AppState.currentDeck = matches;
+        AppState.currentIndex = 0;
+        AppState.isAlphabetMode = true;
       }
-      history = [];
-      renderCards(); renderVine(); speakCard(currentDeck[currentIndex]);
+      AppState.history = [];
+      renderCards(); renderVine(); speakCard(AppState.currentDeck[AppState.currentIndex]);
       return;
     }
   }
 
   if (['Space','Enter'].includes(e.code)) {
     e.preventDefault();
-    if (isAlphabetMode) {
+    if (AppState.isAlphabetMode) {
       // Exit alphabet mode and return to full deck
       restartDeck();
     } else {
@@ -2931,14 +4437,18 @@ document.addEventListener('keydown', e => {
     }
     return;
   }
-  
+
   if (e.code==='ArrowRight') { e.preventDefault(); nextCard(); }
   if (e.code==='ArrowLeft') { e.preventDefault(); undoCard(); }
+  if (e.code==='Escape') { e.preventDefault(); goHome(); }
 });
 
 let tx=0, ty=0;
 document.addEventListener('touchstart', e=>{ tx=e.touches[0].clientX; ty=e.touches[0].clientY; },{passive:true});
 document.addEventListener('touchend', e=>{
+  // Only handle swipes/taps when in activity screen
+  if (AppState.screen !== 'activity') return;
+
   const dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
   // If it's a swipe
   if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>48){ if(dx<0) nextCard(); else undoCard(); }
