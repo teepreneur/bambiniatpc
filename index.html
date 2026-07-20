@@ -4316,18 +4316,18 @@ function renderVine() {
 }
 
 const CARD_BG_COLORS = {
-  mummy: '#F2EDE3',
-  daddy: '#FADBC8',
-  baby: '#D4CDE6',
-  goodmorning: '#FCEBB6',
-  brushteeth: '#D3E6F5',
-  washhands: '#CCEBE7',
-  timeforbed: '#1D2E47',
-  eatfood: '#FADBC8',
-  sayhello: '#E8DCC4',
-  timetoplay: '#D2E6D1',
-  cat: '#F2EDE3',
-  dog: '#D4CDE6'
+  baby: '#BFB4DE',
+  brushteeth: '#B8DBEE',
+  cat: '#FCF1DB',
+  daddy: '#FDC5A0',
+  dog: '#CBCFF5',
+  eatfood: '#FCB683',
+  goodmorning: '#F7C96B',
+  mummy: '#FBEBD1',
+  sayhello: '#E5BA83',
+  timeforbed: '#304769',
+  timetoplay: '#ABC3A9',
+  washhands: '#99D1C6'
 };
 
 function applyCardThemeColor(cardEl, colorStr) {
@@ -4350,26 +4350,39 @@ function applyCardThemeColor(cardEl, colorStr) {
   
   const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
   if (yiq < 128) {
-    cardEl.classList.add('dark-card');
+    // Dark background -> Light text variables
+    cardEl.style.setProperty('--text-dark', '#FDFAF4');
+    cardEl.style.setProperty('--text-mid', '#D9D1C5');
+    cardEl.style.setProperty('--text-light', '#9C8E82');
+    cardEl.style.setProperty('--border-card', 'rgba(255, 255, 255, 0.15)');
+    cardEl.style.setProperty('--syllable-bg', 'rgba(255, 255, 255, 0.15)');
   } else {
-    cardEl.classList.remove('dark-card');
+    // Light background -> Dark text variables
+    cardEl.style.setProperty('--text-dark', '#2E1F0F');
+    cardEl.style.setProperty('--text-mid', '#6B4C34');
+    cardEl.style.setProperty('--text-light', '#A8866A');
+    cardEl.style.setProperty('--border-card', 'rgba(120, 95, 70, 0.09)');
+    cardEl.style.setProperty('--syllable-bg', 'rgba(120, 95, 70, 0.06)');
   }
 }
 
 function updateCardBackground(img) {
+  const card = img.closest('.flashcard');
+  if (card && card.dataset.hasThemeColor) return;
+  
   try {
     const canvas = document.createElement('canvas');
-    canvas.width = 10;
-    canvas.height = 10;
+    canvas.width = 4;
+    canvas.height = 4;
     const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0, 10, 10);
-    const imgData = ctx.getImageData(5, 5, 1, 1).data;
+    ctx.drawImage(img, 0, 0, 4, 4);
+    // Sample from upper-left quadrant (index 1,1 in 4x4 canvas represents 25% of image width/height)
+    const imgData = ctx.getImageData(1, 1, 1, 1).data;
     const r = imgData[0];
     const g = imgData[1];
     const b = imgData[2];
     const a = imgData[3];
     if (a === 255) {
-      const card = img.closest('.flashcard');
       if (card) {
         applyCardThemeColor(card, `rgb(${r}, ${g}, ${b})`);
       }
@@ -4387,6 +4400,7 @@ function createCardEl(card, offset) {
   // Apply static background color if pre-mapped
   if (CARD_BG_COLORS[card.id]) {
     applyCardThemeColor(el, CARD_BG_COLORS[card.id]);
+    el.dataset.hasThemeColor = 'true';
   }
   
   const syllHtml = card.syllables && card.syllables.length > 1
