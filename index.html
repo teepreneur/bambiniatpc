@@ -156,6 +156,23 @@
         0 20px 54px rgba(120,95,70,0.05), inset 0 1px 0 rgba(255,255,255,0.9);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       padding: 30px 24px 26px; will-change: transform; transform-origin: center bottom;
+      transition: background-color 0.25s ease;
+    }
+    .flashcard.dark-card {
+      color: #FDFAF4;
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+    .flashcard.dark-card .card-word {
+      color: #FDFAF4;
+    }
+    .flashcard.dark-card .card-counter,
+    .flashcard.dark-card .card-corner,
+    .flashcard.dark-card .card-phonetic {
+      color: rgba(253, 250, 244, 0.7);
+    }
+    .flashcard.dark-card .syllable {
+      background: rgba(255, 255, 255, 0.15);
+      color: #FDFAF4;
     }
     .flashcard.stack-2 { transform: translateY(7px) rotate(1.4deg) scale(0.97); z-index: 1; filter: brightness(0.963); }
     .flashcard.stack-3 { transform: translateY(13px) rotate(-0.9deg) scale(0.944); z-index: 0; filter: brightness(0.930); }
@@ -4298,10 +4315,80 @@ function renderVine() {
   });
 }
 
+const CARD_BG_COLORS = {
+  mummy: '#F2EDE3',
+  daddy: '#FADBC8',
+  baby: '#D4CDE6',
+  goodmorning: '#FCEBB6',
+  brushteeth: '#D3E6F5',
+  washhands: '#CCEBE7',
+  timeforbed: '#1D2E47',
+  eatfood: '#FADBC8',
+  sayhello: '#E8DCC4',
+  timetoplay: '#D2E6D1',
+  cat: '#F2EDE3',
+  dog: '#D4CDE6'
+};
+
+function applyCardThemeColor(cardEl, colorStr) {
+  cardEl.style.backgroundColor = colorStr;
+  
+  let r = 242, g = 237, b = 227;
+  if (colorStr.startsWith('#')) {
+    const hex = colorStr.replace('#', '');
+    r = parseInt(hex.substring(0, 2), 16);
+    g = parseInt(hex.substring(2, 4), 16);
+    b = parseInt(hex.substring(4, 6), 16);
+  } else if (colorStr.startsWith('rgb')) {
+    const parts = colorStr.match(/\d+/g);
+    if (parts) {
+      r = parseInt(parts[0]);
+      g = parseInt(parts[1]);
+      b = parseInt(parts[2]);
+    }
+  }
+  
+  const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+  if (yiq < 128) {
+    cardEl.classList.add('dark-card');
+  } else {
+    cardEl.classList.remove('dark-card');
+  }
+}
+
+function updateCardBackground(img) {
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width = 10;
+    canvas.height = 10;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, 10, 10);
+    const imgData = ctx.getImageData(5, 5, 1, 1).data;
+    const r = imgData[0];
+    const g = imgData[1];
+    const b = imgData[2];
+    const a = imgData[3];
+    if (a === 255) {
+      const card = img.closest('.flashcard');
+      if (card) {
+        applyCardThemeColor(card, `rgb(${r}, ${g}, ${b})`);
+      }
+    }
+  } catch (e) {
+    // Graceful fallback for file:// or cross-origin canvas security blocks
+  }
+}
+
 function createCardEl(card, offset) {
   const el = document.createElement('div');
   el.className = 'flashcard ' + (offset === 0 ? 'top' : offset === 1 ? 'stack-2' : 'stack-3');
   if (offset === 0) el.id = 'topCard';
+  
+  // Apply static background color if pre-mapped
+  if (CARD_BG_COLORS[card.id]) {
+    applyCardThemeColor(el, CARD_BG_COLORS[card.id]);
+  }
+  
   const syllHtml = card.syllables && card.syllables.length > 1
     ? `<div class="card-syllables">${card.syllables.map(s=>`<span class="syllable">${s}</span>`).join('')}</div>` : '';
 
@@ -4314,6 +4401,7 @@ function createCardEl(card, offset) {
     <div class="card-illustration">
       <img src="assets/cards/${card.id}.png" 
            class="card-image" 
+           onload="updateCardBackground(this)"
            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" 
            style="display: block; max-width: 100%; max-height: 100%; object-fit: contain;">
       <div class="svg-fallback" style="display: none;">${SVG[card.id]||''}</div>
