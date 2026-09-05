@@ -464,6 +464,65 @@
       }
       .activity-card { aspect-ratio: auto; min-height: 160px; }
     }
+
+    /* Phonics Section Specific Styles */
+    .phonics-stage-bar {
+      display: flex; gap: 6px; overflow-x: auto; padding: 6px 10px; max-width: 100%;
+      margin-bottom: 8px; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+      align-items: center; justify-content: center; flex-wrap: wrap;
+    }
+    .phonics-stage-bar::-webkit-scrollbar { display: none; }
+    .stage-chip {
+      background: var(--warm-white); border: 1.5px solid var(--border-card);
+      border-radius: 20px; padding: 5px 12px; font-family: 'Nunito', sans-serif;
+      font-size: 11px; font-weight: 800; color: var(--text-mid); cursor: pointer;
+      white-space: nowrap; transition: all 0.2s ease; user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .stage-chip:hover { border-color: #E65100; color: #E65100; }
+    .stage-chip.active {
+      background: #E65100; color: #fff; border-color: #E65100; box-shadow: 0 2px 8px rgba(230,81,0,0.3);
+    }
+    .phonics-sound-dots {
+      display: flex; gap: 14px; justify-content: center; align-items: flex-end; margin-top: 10px; flex-wrap: wrap;
+    }
+    .phoneme-group {
+      display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;
+      transition: transform 0.15s ease; position: relative; padding: 2px 4px; border-radius: 8px;
+    }
+    .phoneme-group:active { transform: scale(0.92); }
+    .phoneme-text {
+      font-size: clamp(22px, 5.5vw, 32px); font-weight: 900; color: var(--text-dark); letter-spacing: 2px;
+      line-height: 1; transition: color 0.15s ease, transform 0.15s ease;
+    }
+    .phoneme-group.highlight .phoneme-text {
+      color: #E65100; transform: scale(1.2);
+    }
+    .sound-dot {
+      width: 16px; height: 16px; border-radius: 50%; background: #FF7043; border: 2px solid #fff;
+      box-shadow: 0 2px 6px rgba(230,81,0,0.3); cursor: pointer; transition: all 0.2s ease;
+    }
+    .sound-dot:hover, .phoneme-group.highlight .sound-dot {
+      background: #E65100; transform: scale(1.35); box-shadow: 0 0 10px rgba(230,81,0,0.6);
+    }
+    .digraph-bar {
+      width: 100%; height: 5px; background: #FF7043; border-radius: 4px; margin-top: 2px;
+    }
+    .phonics-prompt {
+      font-size: 12.5px; font-weight: 800; color: #E65100; margin-top: 8px; text-align: center;
+      background: rgba(255,112,67,0.12); padding: 4px 14px; border-radius: 12px;
+    }
+    .decodable-phrase {
+      display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 8px; padding: 0 8px;
+    }
+    .decodable-word {
+      font-size: clamp(18px, 4.5vw, 26px); font-weight: 900; color: var(--text-dark);
+      padding: 4px 10px; border-radius: 10px; background: rgba(0,0,0,0.04); cursor: pointer;
+      transition: all 0.2s ease; border: 1.5px solid transparent;
+    }
+    .decodable-word:hover, .decodable-word.highlight {
+      background: #FFE0B2; border-color: #E65100; color: #E65100; transform: translateY(-2px);
+    }
   </style>
 </head>
 <body>
@@ -491,6 +550,7 @@
 <!-- ACTIVITY SCREEN -->
 <div class="activity-container" id="activityContainer" style="display:none;">
   <div class="stage-label" id="stageLabel"></div>
+  <div class="phonics-stage-bar" id="phonicsStageBar" style="display:none;"></div>
   <div class="progress-vine" id="progressVine"></div>
   <div class="card-arena" id="cardArena"></div>
 
@@ -629,6 +689,18 @@ const SVG = {
   <path d="M30,32 L45,36 L60,28" stroke="#FF6B6B" stroke-width="6" stroke-linecap="round" fill="none"/>
   <path d="M45,44 L32,68" stroke="#FF6B6B" stroke-width="6" stroke-linecap="round"/>
   <path d="M45,44 L58,62" stroke="#FF6B6B" stroke-width="6" stroke-linecap="round"/>
+</svg>`,
+
+// Phonics activity icon (sound wave + letter tile)
+'icon-phonics': `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <rect x="8" y="16" width="30" height="30" rx="6" fill="#FF7043"/>
+  <text x="23" y="38" font-family="Nunito" font-size="18" font-weight="900" fill="white" text-anchor="middle">a</text>
+  <circle cx="23" cy="40" r="2.5" fill="#FFE0B2"/>
+  <rect x="42" y="16" width="30" height="30" rx="6" fill="#E65100"/>
+  <text x="57" y="38" font-family="Nunito" font-size="18" font-weight="900" fill="white" text-anchor="middle">b</text>
+  <circle cx="57" cy="40" r="2.5" fill="#FFE0B2"/>
+  <rect x="16" y="50" width="48" height="20" rx="10" fill="#FFA726"/>
+  <text x="40" y="65" font-family="Nunito" font-size="13" font-weight="900" fill="white" text-anchor="middle">c - a - t</text>
 </svg>`,
 
 // ═══════════════════════════════════════════════
@@ -3983,9 +4055,119 @@ const ACTION_CARDS = [
 ];
 
 // ═══════════════════════════════════════════════
+//  CARD DATA - PHONICS (Synthetic Phonics & Science of Reading)
+// ═══════════════════════════════════════════════
+const PHONICS_CARDS = [
+  // ── STAGE 1: LETTER SOUNDS (A to Z) ──
+  { id:'ph-a', word:'Aa', stage:1, phonetic:'/æ/', prompt:'A says /æ/ as in Apple', phonemes:['A'], phoneticSounds:['ah'], exampleWord:'Apple', cardBg:'#FFE0B2' },
+  { id:'ph-b', word:'Bb', stage:1, phonetic:'/b/', prompt:'B says /b/ as in Ball', phonemes:['B'], phoneticSounds:['buh'], exampleWord:'Ball', cardBg:'#BBDEFB' },
+  { id:'ph-c', word:'Cc', stage:1, phonetic:'/k/', prompt:'C says /k/ as in Cat', phonemes:['C'], phoneticSounds:['kuh'], exampleWord:'Cat', cardBg:'#C8E6C9' },
+  { id:'ph-d', word:'Dd', stage:1, phonetic:'/d/', prompt:'D says /d/ as in Dog', phonemes:['D'], phoneticSounds:['duh'], exampleWord:'Dog', cardBg:'#F8BBD0' },
+  { id:'ph-e', word:'Ee', stage:1, phonetic:'/ɛ/', prompt:'E says /ɛ/ as in Egg', phonemes:['E'], phoneticSounds:['eh'], exampleWord:'Egg', cardBg:'#FFF9C4' },
+  { id:'ph-f', word:'Ff', stage:1, phonetic:'/f/', prompt:'F says /f/ as in Fish', phonemes:['F'], phoneticSounds:['ff'], exampleWord:'Fish', cardBg:'#E1BEE7' },
+  { id:'ph-g', word:'Gg', stage:1, phonetic:'/ɡ/', prompt:'G says /ɡ/ as in Goat', phonemes:['G'], phoneticSounds:['guh'], exampleWord:'Goat', cardBg:'#DCEDC8' },
+  { id:'ph-h', word:'Hh', stage:1, phonetic:'/h/', prompt:'H says /h/ as in Hat', phonemes:['H'], phoneticSounds:['huh'], exampleWord:'Hat', cardBg:'#FFCCBC' },
+  { id:'ph-i', word:'Ii', stage:1, phonetic:'/ɪ/', prompt:'I says /ɪ/ as in Igloo', phonemes:['I'], phoneticSounds:['ih'], exampleWord:'Igloo', cardBg:'#B3E5FC' },
+  { id:'ph-j', word:'Jj', stage:1, phonetic:'/dʒ/', prompt:'J says /dʒ/ as in Jam', phonemes:['J'], phoneticSounds:['juh'], exampleWord:'Jam', cardBg:'#F0F4C3' },
+  { id:'ph-k', word:'Kk', stage:1, phonetic:'/k/', prompt:'K says /k/ as in Kite', phonemes:['K'], phoneticSounds:['kuh'], exampleWord:'Kite', cardBg:'#D1C4E9' },
+  { id:'ph-l', word:'Ll', stage:1, phonetic:'/l/', prompt:'L says /l/ as in Leaf', phonemes:['L'], phoneticSounds:['ll'], exampleWord:'Leaf', cardBg:'#C8E6C9' },
+  { id:'ph-m', word:'Mm', stage:1, phonetic:'/m/', prompt:'M says /m/ as in Moon', phonemes:['M'], phoneticSounds:['mm'], exampleWord:'Moon', cardBg:'#CFD8DC' },
+  { id:'ph-n', word:'Nn', stage:1, phonetic:'/n/', prompt:'N says /n/ as in Net', phonemes:['N'], phoneticSounds:['nn'], exampleWord:'Net', cardBg:'#FFE0B2' },
+  { id:'ph-o', word:'Oo', stage:1, phonetic:'/ɒ/', prompt:'O says /ɒ/ as in Owl', phonemes:['O'], phoneticSounds:['oh'], exampleWord:'Owl', cardBg:'#FFECB3' },
+  { id:'ph-p', word:'Pp', stage:1, phonetic:'/p/', prompt:'P says /p/ as in Pig', phonemes:['P'], phoneticSounds:['puh'], exampleWord:'Pig', cardBg:'#F8BBD0' },
+  { id:'ph-q', word:'Qq', stage:1, phonetic:'/kw/', prompt:'Q says /kw/ as in Queen', phonemes:['Q'], phoneticSounds:['kwuh'], exampleWord:'Queen', cardBg:'#E1BEE7' },
+  { id:'ph-r', word:'Rr', stage:1, phonetic:'/r/', prompt:'R says /r/ as in Run', phonemes:['R'], phoneticSounds:['err'], exampleWord:'Run', cardBg:'#FFCDD2' },
+  { id:'ph-s', word:'Ss', stage:1, phonetic:'/s/', prompt:'S says /s/ as in Sun', phonemes:['S'], phoneticSounds:['sss'], exampleWord:'Sun', cardBg:'#FFF59D' },
+  { id:'ph-t', word:'Tt', stage:1, phonetic:'/t/', prompt:'T says /t/ as in Top', phonemes:['T'], phoneticSounds:['tuh'], exampleWord:'Top', cardBg:'#B2DFDB' },
+  { id:'ph-u', word:'Uu', stage:1, phonetic:'/ʌ/', prompt:'U says /ʌ/ as in Up', phonemes:['U'], phoneticSounds:['uh'], exampleWord:'Up', cardBg:'#D7CCC8' },
+  { id:'ph-v', word:'Vv', stage:1, phonetic:'/v/', prompt:'V says /v/ as in Van', phonemes:['V'], phoneticSounds:['vvv'], exampleWord:'Van', cardBg:'#E0F2F1' },
+  { id:'ph-w', word:'Ww', stage:1, phonetic:'/w/', prompt:'W says /w/ as in Water', phonemes:['W'], phoneticSounds:['wuh'], exampleWord:'Water', cardBg:'#B3E5FC' },
+  { id:'ph-x', word:'Xx', stage:1, phonetic:'/ks/', prompt:'X says /ks/ as in Fox', phonemes:['X'], phoneticSounds:['kss'], exampleWord:'Fox', cardBg:'#F5F5F5' },
+  { id:'ph-y', word:'Yy', stage:1, phonetic:'/j/', prompt:'Y says /j/ as in Yo-Yo', phonemes:['Y'], phoneticSounds:['yuh'], exampleWord:'Yo-Yo', cardBg:'#FFF9C4' },
+  { id:'ph-z', word:'Zz', stage:1, phonetic:'/z/', prompt:'Z says /z/ as in Zoo', phonemes:['Z'], phoneticSounds:['zzz'], exampleWord:'Zoo', cardBg:'#C8E6C9' },
+
+  // ── STAGE 2: 2-LETTER WORDS (VC & CV) ──
+  { id:'ph-at', word:'AT', stage:2, phonetic:'/æt/', phonemes:['A','T'], phoneticSounds:['ah','tuh'], prompt:'/æ/ + /t/ = AT' },
+  { id:'ph-in', word:'IN', stage:2, phonetic:'/ɪn/', phonemes:['I','N'], phoneticSounds:['ih','nn'], prompt:'/ɪ/ + /n/ = IN' },
+  { id:'ph-on', word:'ON', stage:2, phonetic:'/ɒn/', phonemes:['O','N'], phoneticSounds:['oh','nn'], prompt:'/ɒ/ + /n/ = ON' },
+  { id:'ph-up', word:'UP', stage:2, phonetic:'/ʌp/', phonemes:['U','P'], phoneticSounds:['uh','puh'], prompt:'/ʌ/ + /p/ = UP' },
+  { id:'ph-am', word:'AM', stage:2, phonetic:'/æm/', phonemes:['A','M'], phoneticSounds:['ah','mm'], prompt:'/æ/ + /m/ = AM' },
+  { id:'ph-an', word:'AN', stage:2, phonetic:'/æn/', phonemes:['A','N'], phoneticSounds:['ah','nn'], prompt:'/æ/ + /n/ = AN' },
+  { id:'ph-go', word:'GO', stage:2, phonetic:'/ɡoʊ/', phonemes:['G','O'], phoneticSounds:['guh','oh'], prompt:'/ɡ/ + /oʊ/ = GO' },
+  { id:'ph-no', word:'NO', stage:2, phonetic:'/noʊ/', phonemes:['N','O'], phoneticSounds:['nn','oh'], prompt:'/n/ + /oʊ/ = NO' },
+  { id:'ph-me', word:'ME', stage:2, phonetic:'/miː/', phonemes:['M','E'], phoneticSounds:['mm','ee'], prompt:'/m/ + /iː/ = ME' },
+  { id:'ph-be', word:'BE', stage:2, phonetic:'/biː/', phonemes:['B','E'], phoneticSounds:['buh','ee'], prompt:'/b/ + /iː/ = BE' },
+  { id:'ph-he', word:'HE', stage:2, phonetic:'/hiː/', phonemes:['H','E'], phoneticSounds:['huh','ee'], prompt:'/h/ + /iː/ = HE' },
+  { id:'ph-is', word:'IS', stage:2, phonetic:'/ɪz/', phonemes:['I','S'], phoneticSounds:['ih','zzz'], prompt:'/ɪ/ + /z/ = IS' },
+  { id:'ph-it', word:'IT', stage:2, phonetic:'/ɪt/', phonemes:['I','T'], phoneticSounds:['ih','tuh'], prompt:'/ɪ/ + /t/ = IT' },
+  { id:'ph-my', word:'MY', stage:2, phonetic:'/maɪ/', phonemes:['M','Y'], phoneticSounds:['mm','eye'], prompt:'/m/ + /aɪ/ = MY' },
+  { id:'ph-so', word:'SO', stage:2, phonetic:'/soʊ/', phonemes:['S','O'], phoneticSounds:['sss','oh'], prompt:'/s/ + /oʊ/ = SO' },
+
+  // ── STAGE 3: 3-LETTER WORDS (CVC SOUND-BY-SOUND BLENDING) ──
+  { id:'ph-cat', word:'CAT', stage:3, phonetic:'/kæt/', phonemes:['C','A','T'], phoneticSounds:['kuh','ah','tuh'], prompt:'/k/ + /æ/ + /t/ = CAT' },
+  { id:'ph-dog', word:'DOG', stage:3, phonetic:'/dɒɡ/', phonemes:['D','O','G'], phoneticSounds:['duh','oh','guh'], prompt:'/d/ + /ɒ/ + /ɡ/ = DOG' },
+  { id:'ph-sun', word:'SUN', stage:3, phonetic:'/sʌn/', phonemes:['S','U','N'], phoneticSounds:['sss','uh','nn'], prompt:'/s/ + /ʌ/ + /n/ = SUN' },
+  { id:'ph-pin', word:'PIN', stage:3, phonetic:'/pɪn/', phonemes:['P','I','N'], phoneticSounds:['puh','ih','nn'], prompt:'/p/ + /ɪ/ + /n/ = PIN' },
+  { id:'ph-bed', word:'BED', stage:3, phonetic:'/bɛd/', phonemes:['B','E','D'], phoneticSounds:['buh','eh','duh'], prompt:'/b/ + /ɛ/ + /d/ = BED' },
+  { id:'ph-mug', word:'MUG', stage:3, phonetic:'/mʌɡ/', phonemes:['M','U','G'], phoneticSounds:['mm','uh','guh'], prompt:'/m/ + /ʌ/ + /ɡ/ = MUG' },
+  { id:'ph-tap', word:'TAP', stage:3, phonetic:'/tæp/', phonemes:['T','A','P'], phoneticSounds:['tuh','ah','puh'], prompt:'/t/ + /æ/ + /p/ = TAP' },
+  { id:'ph-red', word:'RED', stage:3, phonetic:'/rɛd/', phonemes:['R','E','D'], phoneticSounds:['err','eh','duh'], prompt:'/r/ + /ɛ/ + /d/ = RED' },
+  { id:'ph-fix', word:'FIX', stage:3, phonetic:'/fɪks/', phonemes:['F','I','X'], phoneticSounds:['ff','ih','kss'], prompt:'/f/ + /ɪ/ + /ks/ = FIX' },
+  { id:'ph-pen', word:'PEN', stage:3, phonetic:'/pɛn/', phonemes:['P','E','N'], phoneticSounds:['puh','eh','nn'], prompt:'/p/ + /ɛ/ + /n/ = PEN' },
+  { id:'ph-run', word:'RUN', stage:3, phonetic:'/rʌn/', phonemes:['R','U','N'], phoneticSounds:['err','uh','nn'], prompt:'/r/ + /ʌ/ + /n/ = RUN' },
+  { id:'ph-pot', word:'POT', stage:3, phonetic:'/pɒt/', phonemes:['P','O','T'], phoneticSounds:['puh','oh','tuh'], prompt:'/p/ + /ɒ/ + /t/ = POT' },
+  { id:'ph-bat', word:'BAT', stage:3, phonetic:'/bæt/', phonemes:['B','A','T'], phoneticSounds:['buh','ah','tuh'], prompt:'/b/ + /æ/ + /t/ = BAT' },
+  { id:'ph-cup', word:'CUP', stage:3, phonetic:'/kʌp/', phonemes:['C','U','P'], phoneticSounds:['kuh','uh','puh'], prompt:'/k/ + /ʌ/ + /p/ = CUP' },
+
+  // ── STAGE 4: 4-LETTER WORDS (CCVC / CVCC / DIGRAPHS & BLENDS) ──
+  { id:'ph-frog', word:'FROG', stage:4, phonetic:'/frɒɡ/', phonemes:['F','R','O','G'], phoneticSounds:['ff','err','oh','guh'], prompt:'/f/ /r/ /ɒ/ /ɡ/ = FROG' },
+  { id:'ph-fish', word:'FISH', stage:4, phonetic:'/fɪʃ/', phonemes:['F','I','SH'], digraphs:['SH'], phoneticSounds:['ff','ih','shh'], prompt:'/f/ /ɪ/ /ʃ/ = FISH' },
+  { id:'ph-duck', word:'DUCK', stage:4, phonetic:'/dʌk/', phonemes:['D','U','CK'], digraphs:['CK'], phoneticSounds:['duh','uh','kuh'], prompt:'/d/ /ʌ/ /k/ = DUCK' },
+  { id:'ph-stop', word:'STOP', stage:4, phonetic:'/stɒp/', phonemes:['S','T','O','P'], phoneticSounds:['sss','tuh','oh','puh'], prompt:'/s/ /t/ /ɒ/ /p/ = STOP' },
+  { id:'ph-star', word:'STAR', stage:4, phonetic:'/stɑːr/', phonemes:['S','T','AR'], digraphs:['AR'], phoneticSounds:['sss','tuh','ahr'], prompt:'/s/ /t/ /ɑːr/ = STAR' },
+  { id:'ph-ship', word:'SHIP', stage:4, phonetic:'/ʃɪp/', phonemes:['SH','I','P'], digraphs:['SH'], phoneticSounds:['shh','ih','puh'], prompt:'/ʃ/ /ɪ/ /p/ = SHIP' },
+  { id:'ph-chin', word:'CHIN', stage:4, phonetic:'/tʃɪn/', phonemes:['CH','I','N'], digraphs:['CH'], phoneticSounds:['chuh','ih','nn'], prompt:'/tʃ/ /ɪ/ /n/ = CHIN' },
+  { id:'ph-clap', word:'CLAP', stage:4, phonetic:'/klæp/', phonemes:['C','L','A','P'], phoneticSounds:['kuh','ll','ah','puh'], prompt:'/k/ /l/ /æ/ /p/ = CLAP' },
+  { id:'ph-milk', word:'MILK', stage:4, phonetic:'/mɪlk/', phonemes:['M','I','L','K'], phoneticSounds:['mm','ih','ll','kuh'], prompt:'/m/ /ɪ/ /l/ /k/ = MILK' },
+  { id:'ph-best', word:'BEST', stage:4, phonetic:'/bɛst/', phonemes:['B','E','S','T'], phoneticSounds:['buh','eh','sss','tuh'], prompt:'/b/ /ɛ/ /s/ /t/ = BEST' },
+
+  // ── STAGE 5: BIGGER WORDS (MULTI-SYLLABIC CHUNKING) ──
+  { id:'ph-rabbit', word:'RABBIT', stage:5, phonetic:'/ˈræb.ɪt/', phonemes:['R','A','B','B','I','T'], syllables:['RAB','BIT'], phoneticSounds:['err','ah','buh','buh','ih','tuh'], prompt:'RAB - BIT = RABBIT' },
+  { id:'ph-sunset', word:'SUNSET', stage:5, phonetic:'/ˈsʌn.sɛt/', phonemes:['S','U','N','S','E','T'], syllables:['SUN','SET'], phoneticSounds:['sss','uh','nn','sss','eh','tuh'], prompt:'SUN - SET = SUNSET' },
+  { id:'ph-basket', word:'BASKET', stage:5, phonetic:'/ˈbæs.kɪt/', phonemes:['B','A','S','K','E','T'], syllables:['BAS','KET'], phoneticSounds:['buh','ah','sss','kuh','eh','tuh'], prompt:'BAS - KET = BASKET' },
+  { id:'ph-candle', word:'CANDLE', stage:5, phonetic:'/ˈkæn.dəl/', phonemes:['C','A','N','D','L','E'], syllables:['CAN','DLE'], phoneticSounds:['kuh','ah','nn','duh','ll'], prompt:'CAN - DLE = CANDLE' },
+  { id:'ph-helmet', word:'HELMET', stage:5, phonetic:'/ˈhɛl.mɪt/', phonemes:['H','E','L','M','E','T'], syllables:['HEL','MET'], phoneticSounds:['huh','eh','ll','mm','eh','tuh'], prompt:'HEL - MET = HELMET' },
+  { id:'ph-kitten', word:'KITTEN', stage:5, phonetic:'/ˈkɪt.ən/', phonemes:['K','I','T','T','E','N'], syllables:['KIT','TEN'], phoneticSounds:['kuh','ih','tuh','tuh','eh','nn'], prompt:'KIT - TEN = KITTEN' },
+  { id:'ph-rocket', word:'ROCKET', stage:5, phonetic:'/ˈrɒk.ɪt/', phonemes:['R','O','CK','E','T'], digraphs:['CK'], syllables:['ROC','KET'], phoneticSounds:['err','oh','kuh','eh','tuh'], prompt:'ROC - KET = ROCKET' },
+
+  // ── STAGE 6: DECODABLE SHORT PHRASES (SOUND-OUT READING) ──
+  { id:'ph-p1', word:'A CAT ON A MAT', stage:6, phonetic:'/ə kæt ɒn ə mæt/', decodableWords:['A','CAT','ON','A','MAT'], prompt:'Sound out: A · CAT · ON · A · MAT' },
+  { id:'ph-p2', word:'THE RED DOG RUNS', stage:6, phonetic:'/ðə rɛd dɒɡ rʌnz/', decodableWords:['THE','RED','DOG','RUNS'], prompt:'Sound out: THE · RED · DOG · RUNS' },
+  { id:'ph-p3', word:'BIG SUN IN THE SKY', stage:6, phonetic:'/bɪɡ sʌn ɪn ðə skaɪ/', decodableWords:['BIG','SUN','IN','THE','SKY'], prompt:'Sound out: BIG · SUN · IN · THE · SKY' },
+  { id:'ph-p4', word:'HOP ON THE BED', stage:6, phonetic:'/hɒp ɒn ðə bɛd/', decodableWords:['HOP','ON','THE','BED'], prompt:'Sound out: HOP · ON · THE · BED' },
+  { id:'ph-p5', word:'CAN THE FROG JUMP', stage:6, phonetic:'/kæn ðə frɒɡ dʒʌmp/', decodableWords:['CAN','THE','FROG','JUMP'], prompt:'Sound out: CAN · THE · FROG · JUMP' },
+];
+
+// ═══════════════════════════════════════════════
 //  ACTIVITIES CONFIGURATION
 // ═══════════════════════════════════════════════
 const ACTIVITIES = {
+  phonics: {
+    id: 'phonics',
+    name: 'Phonics',
+    icon: 'icon-phonics',
+    color: '#E65100',
+    description: 'Letters & sound blending',
+    cards: PHONICS_CARDS,
+    stageLabels: {
+      1: 'Stage 1 · Letter Sounds (A-Z)',
+      2: 'Stage 2 · 2-Letter Words (VC & CV)',
+      3: 'Stage 3 · 3-Letter Words (CVC Blending)',
+      4: 'Stage 4 · 4-Letter Words & Digraphs',
+      5: 'Stage 5 · Multi-Syllable Words',
+      6: 'Stage 6 · Decodable Short Phrases'
+    }
+  },
   words: {
     id: 'words',
     name: 'Words',
@@ -4242,14 +4424,141 @@ window.speechSynthesis.onvoiceschanged = loadBestVoice;
 loadBestVoice();
 
 let activeAudio = null;
+let phonicsTimeoutIds = [];
+
+function clearPhonicsTimers() {
+  phonicsTimeoutIds.forEach(id => clearTimeout(id));
+  phonicsTimeoutIds = [];
+  document.querySelectorAll('.phoneme-group, .decodable-word').forEach(el => el.classList.remove('highlight'));
+}
 
 function stopCurrentAudio() {
+  clearPhonicsTimers();
   window.speechSynthesis.cancel();
   if (activeAudio) {
     activeAudio.pause();
     activeAudio.currentTime = 0;
     activeAudio = null;
   }
+}
+
+function speakPhoneme(phoneme, phoneticSound) {
+  if (!audioOn) return;
+  startBgMusic();
+  stopCurrentAudio();
+
+  const soundText = phoneticSound || phoneme;
+  const u = new SpeechSynthesisUtterance(soundText.toLowerCase());
+  if (bestVoice) u.voice = bestVoice;
+  u.rate = 0.68;
+  u.pitch = 1.12;
+  window.speechSynthesis.speak(u);
+}
+
+function speakSingleWord(word) {
+  if (!audioOn) return;
+  startBgMusic();
+  stopCurrentAudio();
+
+  const u = new SpeechSynthesisUtterance(word.toLowerCase());
+  if (bestVoice) u.voice = bestVoice;
+  u.rate = 0.8;
+  u.pitch = 1.05;
+  window.speechSynthesis.speak(u);
+}
+
+function speakPhonicsCard(card) {
+  if (!audioOn) return;
+  startBgMusic();
+  stopCurrentAudio();
+
+  const btn = document.getElementById('audioBtn');
+  btn.classList.add('speaking');
+
+  // Stage 1: Letter Sounds (A says /æ/ as in Apple)
+  if (card.stage === 1) {
+    const textToSay = card.prompt || `${card.word} says ${card.phoneticSounds?.[0]||card.word} as in ${card.exampleWord||card.word}`;
+    const u = new SpeechSynthesisUtterance(textToSay.toLowerCase());
+    if (bestVoice) u.voice = bestVoice;
+    u.rate = 0.82;
+    u.pitch = 1.06;
+    u.onend = u.onerror = () => btn.classList.remove('speaking');
+    window.speechSynthesis.speak(u);
+    return;
+  }
+
+  // Stage 2-5: Words with Phonemes (Sound-by-sound blending!)
+  if (card.phonemes && card.phonemes.length > 0) {
+    const phonemeEls = document.querySelectorAll('#topCard .phoneme-group');
+    let delay = 0;
+
+    // Step 1: Sound out each phoneme slowly
+    card.phonemes.forEach((ph, idx) => {
+      const tid = setTimeout(() => {
+        phonemeEls.forEach(el => el.classList.remove('highlight'));
+        if (phonemeEls[idx]) phonemeEls[idx].classList.add('highlight');
+
+        const sound = card.phoneticSounds?.[idx] || ph;
+        const u = new SpeechSynthesisUtterance(sound.toLowerCase());
+        if (bestVoice) u.voice = bestVoice;
+        u.rate = 0.65;
+        u.pitch = 1.12;
+        window.speechSynthesis.speak(u);
+      }, delay);
+      phonicsTimeoutIds.push(tid);
+      delay += 520;
+    });
+
+    // Step 2: Blend into full word
+    const tidBlend = setTimeout(() => {
+      phonemeEls.forEach(el => el.classList.remove('highlight'));
+      const fullWordUtterance = new SpeechSynthesisUtterance(card.word.toLowerCase());
+      if (bestVoice) fullWordUtterance.voice = bestVoice;
+      fullWordUtterance.rate = 0.82;
+      fullWordUtterance.pitch = 1.08;
+      fullWordUtterance.onend = fullWordUtterance.onerror = () => btn.classList.remove('speaking');
+      window.speechSynthesis.speak(fullWordUtterance);
+    }, delay + 280);
+    phonicsTimeoutIds.push(tidBlend);
+    return;
+  }
+
+  // Stage 6: Decodable Short Phrases
+  if (card.decodableWords && card.decodableWords.length > 0) {
+    const wordEls = document.querySelectorAll('#topCard .decodable-word');
+    let delay = 0;
+
+    // Step 1: Read word by word
+    card.decodableWords.forEach((word, idx) => {
+      const tid = setTimeout(() => {
+        wordEls.forEach(el => el.classList.remove('highlight'));
+        if (wordEls[idx]) wordEls[idx].classList.add('highlight');
+
+        const u = new SpeechSynthesisUtterance(word.toLowerCase());
+        if (bestVoice) u.voice = bestVoice;
+        u.rate = 0.78;
+        u.pitch = 1.08;
+        window.speechSynthesis.speak(u);
+      }, delay);
+      phonicsTimeoutIds.push(tid);
+      delay += 620;
+    });
+
+    // Step 2: Read full phrase smoothly
+    const tidPhrase = setTimeout(() => {
+      wordEls.forEach(el => el.classList.remove('highlight'));
+      const uPhrase = new SpeechSynthesisUtterance(card.word.toLowerCase());
+      if (bestVoice) uPhrase.voice = bestVoice;
+      uPhrase.rate = 0.84;
+      uPhrase.pitch = 1.05;
+      uPhrase.onend = uPhrase.onerror = () => btn.classList.remove('speaking');
+      window.speechSynthesis.speak(uPhrase);
+    }, delay + 320);
+    phonicsTimeoutIds.push(tidPhrase);
+    return;
+  }
+
+  playSyntheticFallback(card, btn);
 }
 
 function playSyntheticFallback(card, btn) {
@@ -4267,7 +4576,7 @@ function playSyntheticFallback(card, btn) {
 }
 
 function speakCard(card) {
-  if (!audioOn) return;
+  if (!audioOn || !card) return;
   // Ensure background music is playing once the user interacts/audio is on
   startBgMusic();
 
@@ -4275,6 +4584,11 @@ function speakCard(card) {
   const btn = document.getElementById('audioBtn');
   btn.classList.add('speaking');
   
+  if (AppState.currentActivity?.id === 'phonics' || card.phonemes || card.decodableWords) {
+    speakPhonicsCard(card);
+    return;
+  }
+
   let customAudio = preloadedAudios[card.id];
   if (!customAudio) {
     const capitalized = card.word.charAt(0).toUpperCase() + card.word.slice(1).toLowerCase();
@@ -4392,6 +4706,14 @@ function startActivity(activityId) {
   document.getElementById('homeBtn').style.display = 'flex';
   document.getElementById('logoArea').style.display = 'none';
 
+  const stageBar = document.getElementById('phonicsStageBar');
+  if (activityId === 'phonics') {
+    stageBar.style.display = 'flex';
+    renderPhonicsStageBar(0);
+  } else {
+    stageBar.style.display = 'none';
+  }
+
   renderVine();
   renderCards();
   updateStageLabel();
@@ -4405,9 +4727,53 @@ function startActivity(activityId) {
   }, 300);
 }
 
+function renderPhonicsStageBar(selectedStage) {
+  const bar = document.getElementById('phonicsStageBar');
+  if (!bar) return;
+  const stages = [
+    { id: 0, label: 'All Stages' },
+    { id: 1, label: 'Stage 1 · Letters' },
+    { id: 2, label: 'Stage 2 · 2-Letter' },
+    { id: 3, label: 'Stage 3 · 3-Letter CVC' },
+    { id: 4, label: 'Stage 4 · 4-Letter & Digraphs' },
+    { id: 5, label: 'Stage 5 · Bigger Words' },
+    { id: 6, label: 'Stage 6 · Phrases' }
+  ];
+
+  bar.innerHTML = stages.map(s => `
+    <button class="stage-chip ${s.id === selectedStage ? 'active' : ''}" onclick="filterPhonicsStage(${s.id})">
+      ${s.label}
+    </button>
+  `).join('');
+}
+
+function filterPhonicsStage(stageId) {
+  if (!AppState.currentActivity || AppState.currentActivity.id !== 'phonics') return;
+  
+  if (stageId === 0) {
+    AppState.currentDeck = [...AppState.currentActivity.cards];
+  } else {
+    AppState.currentDeck = AppState.currentActivity.cards.filter(c => c.stage === stageId);
+  }
+  AppState.currentIndex = 0;
+  AppState.history = [];
+  
+  renderPhonicsStageBar(stageId);
+  renderVine();
+  renderCards();
+  updateStageLabel();
+  
+  if (AppState.currentDeck.length > 0) {
+    speakCard(AppState.currentDeck[0]);
+  }
+}
+
 function goHome() {
   stopCurrentAudio();
   stopBgMusic();
+
+  const stageBar = document.getElementById('phonicsStageBar');
+  if (stageBar) stageBar.style.display = 'none';
 
   AppState.screen = 'home';
   AppState.currentActivity = null;
@@ -4556,30 +4922,111 @@ function createCardEl(card, offset) {
   if (offset === 0) el.id = 'topCard';
   
   // Apply static background color if pre-mapped
-  if (CARD_BG_COLORS[card.id]) {
-    applyCardThemeColor(el, CARD_BG_COLORS[card.id]);
+  if (CARD_BG_COLORS[card.id] || card.cardBg) {
+    applyCardThemeColor(el, CARD_BG_COLORS[card.id] || card.cardBg);
     el.dataset.hasThemeColor = 'true';
   }
   
   const syllHtml = card.syllables && card.syllables.length > 1
     ? `<div class="card-syllables">${card.syllables.map(s=>`<span class="syllable">${s}</span>`).join('')}</div>` : '';
 
-  // Handle different card types (stage info for words, just count for others)
-  const cornerText = card.stage ? (card.stage===1?'1 syllable':'2 syllables') : '';
+  // Handle different card types & stages
+  let cornerText = '';
+  if (card.stage) {
+    if (AppState.currentActivity?.stageLabels?.[card.stage]) {
+      cornerText = AppState.currentActivity.stageLabels[card.stage];
+    } else {
+      cornerText = card.stage === 1 ? '1 syllable' : '2 syllables';
+    }
+  }
+
+  // Build Phonics interactive components (Sound Dots / Decodable Phrase Chips)
+  let phonicsHtml = '';
+  if (AppState.currentActivity?.id === 'phonics' || card.phonemes || card.decodableWords) {
+    if (card.stage === 1) {
+      phonicsHtml = `
+        <div class="phonics-sound-dots">
+          <div class="phoneme-group" onclick="event.stopPropagation(); speakPhoneme('${card.word}', '${card.phoneticSounds?.[0]||card.word}')">
+            <span class="phoneme-text">${card.word}</span>
+            <div class="sound-dot" title="Tap sound"></div>
+          </div>
+        </div>
+        ${card.prompt ? `<div class="phonics-prompt">${card.prompt}</div>` : ''}
+      `;
+    } else if (card.phonemes && card.phonemes.length > 0) {
+      const dots = card.phonemes.map((ph, idx) => {
+        const isDigraph = card.digraphs && card.digraphs.includes(ph);
+        return `
+          <div class="phoneme-group" data-ph-idx="${idx}" onclick="event.stopPropagation(); speakPhoneme('${ph}', '${card.phoneticSounds?.[idx]||ph}')">
+            <span class="phoneme-text">${ph}</span>
+            <div class="sound-dot" title="Tap sound"></div>
+            ${isDigraph ? '<div class="digraph-bar"></div>' : ''}
+          </div>
+        `;
+      }).join('');
+      phonicsHtml = `
+        <div class="phonics-sound-dots">${dots}</div>
+        ${card.prompt ? `<div class="phonics-prompt">${card.prompt}</div>` : ''}
+      `;
+    } else if (card.decodableWords && card.decodableWords.length > 0) {
+      const words = card.decodableWords.map((w, idx) => {
+        return `<span class="decodable-word" data-word-idx="${idx}" onclick="event.stopPropagation(); speakSingleWord('${w}')">${w}</span>`;
+      }).join('');
+      phonicsHtml = `
+        <div class="decodable-phrase">${words}</div>
+        ${card.prompt ? `<div class="phonics-prompt">${card.prompt}</div>` : ''}
+      `;
+    }
+  }
+
+  // Render card illustration
+  let illustrationMarkup = '';
+  if (AppState.currentActivity?.id === 'phonics') {
+    let iconSvg = '';
+    if (card.stage === 1) {
+      iconSvg = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="40" fill="${card.cardBg || '#FFE0B2'}"/>
+        <text x="50" y="58" font-family="Nunito" font-size="34" font-weight="900" fill="#E65100" text-anchor="middle">${card.word}</text>
+      </svg>`;
+    } else if (card.stage === 6) {
+      iconSvg = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect x="15" y="25" width="70" height="50" rx="10" fill="#FFE0B2"/>
+        <path d="M25,40 H75 M25,50 H65 M25,60 H55" stroke="#E65100" stroke-width="4" stroke-linecap="round"/>
+      </svg>`;
+    } else {
+      iconSvg = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect x="20" y="25" width="60" height="50" rx="12" fill="#FFE0B2"/>
+        <text x="50" y="56" font-family="Nunito" font-size="22" font-weight="900" fill="#E65100" text-anchor="middle">${card.word}</text>
+      </svg>`;
+    }
+    illustrationMarkup = `
+      <div class="card-illustration">
+        <img src="assets/cards/${card.id}.png" 
+             class="card-image" 
+             onload="updateCardBackground(this)"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" 
+             style="display: block; max-width: 100%; max-height: 100%; object-fit: contain;">
+        <div class="svg-fallback" style="display: none; width:100%; height:100%; align-items:center; justify-content:center;">${iconSvg}</div>
+      </div>`;
+  } else {
+    illustrationMarkup = `
+      <div class="card-illustration">
+        <img src="assets/cards/${card.id}.png" 
+             class="card-image" 
+             onload="updateCardBackground(this)"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" 
+             style="display: block; max-width: 100%; max-height: 100%; object-fit: contain;">
+        <div class="svg-fallback" style="display: none;">${SVG[card.id]||''}</div>
+      </div>`;
+  }
 
   el.innerHTML = `
     <div class="card-counter">${AppState.currentDeck.indexOf(card)+1} / ${AppState.currentDeck.length}</div>
     <div class="card-corner">${cornerText}</div>
-    <div class="card-illustration">
-      <img src="assets/cards/${card.id}.png" 
-           class="card-image" 
-           onload="updateCardBackground(this)"
-           onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" 
-           style="display: block; max-width: 100%; max-height: 100%; object-fit: contain;">
-      <div class="svg-fallback" style="display: none;">${SVG[card.id]||''}</div>
-    </div>
+    ${illustrationMarkup}
     <div class="card-word">${card.word}</div>
     ${syllHtml}
+    ${phonicsHtml}
     <div class="card-phonetic">${card.phonetic || ''}</div>`;
   return el;
 }
