@@ -534,8 +534,11 @@
     bambini <span>at pc</span>
   </div>
   <div class="top-actions">
-    <button class="btn-pill" id="audioBtn" onclick="toggleAudio()">
-      <span id="audioIcon">🔊</span><span>Audio</span>
+    <button class="btn-pill" id="voiceBtn" onclick="toggleVoice()" title="Toggle Voice Audio">
+      <span id="voiceIcon">🗣️</span><span>Voice</span>
+    </button>
+    <button class="btn-pill" id="musicBtn" onclick="toggleMusic()" title="Toggle Background Music">
+      <span id="musicIcon">🎵</span><span>Music</span>
     </button>
     <button class="btn-pill donate" onclick="openDonate()">♥ Donate</button>
   </div>
@@ -4256,9 +4259,9 @@ const AppState = {
 };
 
 // ═══════════════════════════════════════════════
-//  AUDIO
+//  AUDIO & VOICE CONTROL
 // ═══════════════════════════════════════════════
-let bestVoice = null, audioOn = true;
+let bestVoice = null, voiceOn = true, musicOn = true;
 
 // ─── BACKGROUND MUSIC BOX (PLAYLIST) ───
 let audioCtx = null;
@@ -4366,7 +4369,7 @@ function playMusicBoxNote(freq, durMs) {
 }
 
 function nextBgNote() {
-  if (!isBgMusicPlaying || !audioOn) return;
+  if (!isBgMusicPlaying || !musicOn) return;
   initAudioCtx();
   
   const currentSong = MELODIES[currentSongIdx];
@@ -4387,10 +4390,9 @@ function nextBgNote() {
 }
 
 function startBgMusic() {
-  if (isBgMusicPlaying) return;
+  if (!musicOn || isBgMusicPlaying) return;
   isBgMusicPlaying = true;
   noteIdx = 0; 
-  // optionally random currentSongIdx = Math.floor(Math.random() * MELODIES.length);
   nextBgNote();
 }
 
@@ -4399,6 +4401,21 @@ function stopBgMusic() {
   if (bgMusicTimer) {
     clearTimeout(bgMusicTimer);
     bgMusicTimer = null;
+  }
+}
+
+function toggleMusic() {
+  musicOn = !musicOn;
+  const btn = document.getElementById('musicBtn');
+  document.getElementById('musicIcon').textContent = musicOn ? '🎵' : '🔇';
+  btn.classList.toggle('muted', !musicOn);
+  
+  if (musicOn) {
+    if (AppState.screen === 'activity') {
+      startBgMusic();
+    }
+  } else {
+    stopBgMusic();
   }
 }
 
@@ -4443,8 +4460,8 @@ function stopCurrentAudio() {
 }
 
 function speakPhoneme(phoneme, phoneticSound) {
-  if (!audioOn) return;
-  startBgMusic();
+  if (!voiceOn) return;
+  if (musicOn) startBgMusic();
   stopCurrentAudio();
 
   const soundText = phoneticSound || phoneme;
@@ -4456,8 +4473,8 @@ function speakPhoneme(phoneme, phoneticSound) {
 }
 
 function speakSingleWord(word) {
-  if (!audioOn) return;
-  startBgMusic();
+  if (!voiceOn) return;
+  if (musicOn) startBgMusic();
   stopCurrentAudio();
 
   const u = new SpeechSynthesisUtterance(word.toLowerCase());
@@ -4468,11 +4485,11 @@ function speakSingleWord(word) {
 }
 
 function speakPhonicsCard(card) {
-  if (!audioOn) return;
-  startBgMusic();
+  if (!voiceOn) return;
+  if (musicOn) startBgMusic();
   stopCurrentAudio();
 
-  const btn = document.getElementById('audioBtn');
+  const btn = document.getElementById('voiceBtn');
   btn.classList.add('speaking');
 
   // Stage 1: Letter Sounds (A says /æ/ as in Apple)
@@ -4562,7 +4579,8 @@ function speakPhonicsCard(card) {
 }
 
 function playSyntheticFallback(card, btn) {
-  if (!audioOn) return;
+  if (!voiceOn) return;
+  btn = btn || document.getElementById('voiceBtn');
   const mk = (text, rate, pitch) => {
     const u = new SpeechSynthesisUtterance(text);
     if (bestVoice) u.voice = bestVoice;
@@ -4570,18 +4588,17 @@ function playSyntheticFallback(card, btn) {
   };
   const u1 = mk(card.word.toLowerCase(), 0.72, 1.08);
   const u2 = mk(card.word.toLowerCase(), 0.75, 1.08);
-  u2.onend = u2.onerror = () => btn.classList.remove('speaking');
+  u2.onend = u2.onerror = () => { if (btn) btn.classList.remove('speaking'); };
   window.speechSynthesis.speak(u1);
   window.speechSynthesis.speak(u2);
 }
 
 function speakCard(card) {
-  if (!audioOn || !card) return;
-  // Ensure background music is playing once the user interacts/audio is on
-  startBgMusic();
+  if (!voiceOn || !card) return;
+  if (musicOn) startBgMusic();
 
   stopCurrentAudio();
-  const btn = document.getElementById('audioBtn');
+  const btn = document.getElementById('voiceBtn');
   btn.classList.add('speaking');
   
   if (AppState.currentActivity?.id === 'phonics' || card.phonemes || card.decodableWords) {
@@ -4623,18 +4640,17 @@ function speakCard(card) {
   });
 }
 
-function toggleAudio() {
-  audioOn = !audioOn;
-  document.getElementById('audioIcon').textContent = audioOn ? '🔊' : '🔇';
-  const btn = document.getElementById('audioBtn');
-  btn.classList.toggle('muted', !audioOn);
+function toggleVoice() {
+  voiceOn = !voiceOn;
+  const btn = document.getElementById('voiceBtn');
+  document.getElementById('voiceIcon').textContent = voiceOn ? '🗣️' : '🔇';
+  btn.classList.toggle('muted', !voiceOn);
   
-  if (audioOn && AppState.screen === 'activity' && AppState.currentDeck.length > 0) {
+  if (voiceOn && AppState.screen === 'activity' && AppState.currentDeck.length > 0) {
     speakCard(AppState.currentDeck[AppState.currentIndex]);
   } else {
     stopCurrentAudio();
     btn.classList.remove('speaking');
-    stopBgMusic();
   }
 }
 
