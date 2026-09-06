@@ -523,6 +523,302 @@
     .decodable-word:hover, .decodable-word.highlight {
       background: #FFE0B2; border-color: #E65100; color: #E65100; transform: translateY(-2px);
     }
+
+    /* ═══════════════════════════════════════════════
+       STORYBOOKS SECTION
+       ═══════════════════════════════════════════════ */
+    .storybooks-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 20px 30px;
+      max-width: 1040px;
+      margin: 0 auto;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    
+    /* Shelf / Library View */
+    .story-library-view {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 0.3s ease;
+    }
+    .story-library-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .story-shelf-title {
+      font-size: clamp(26px, 5vw, 36px);
+      font-weight: 900;
+      color: var(--text-dark);
+      letter-spacing: -0.5px;
+    }
+    .story-shelf-sub {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-mid);
+      margin-top: 6px;
+    }
+    .story-bookshelf-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+      width: 100%;
+      max-width: 960px;
+    }
+    .story-book-card {
+      background: var(--surface);
+      border-radius: 26px;
+      overflow: hidden;
+      border: 3px solid rgba(0,0,0,0.06);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.06);
+      cursor: pointer;
+      transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .story-book-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 18px 38px rgba(106, 27, 154, 0.18);
+      border-color: #7E57C2;
+    }
+    .story-book-card:active {
+      transform: scale(0.98);
+    }
+    .story-cover-art {
+      height: 190px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .story-cover-art svg {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .story-cover-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(255,255,255,0.94);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 900;
+      color: #5E35B1;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.14);
+      backdrop-filter: blur(4px);
+    }
+    .story-cover-info {
+      padding: 16px 18px 20px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      background: #FFFFFF;
+    }
+    .story-card-title {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--text-dark);
+      line-height: 1.3;
+      margin-bottom: 6px;
+    }
+    .story-card-desc {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-mid);
+      line-height: 1.45;
+      flex: 1;
+      margin-bottom: 14px;
+    }
+    .story-card-btn {
+      align-self: flex-start;
+      background: #7E57C2;
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-weight: 800;
+      font-size: 13px;
+      box-shadow: 0 3px 10px rgba(126,87,194,0.3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+    .story-book-card:hover .story-card-btn {
+      background: #5E35B1;
+    }
+
+    /* Reader View */
+    .story-reader-view {
+      width: 100%;
+      max-width: 820px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 0.3s ease;
+    }
+    .story-reader-nav {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      gap: 12px;
+    }
+    .story-book-title {
+      font-size: clamp(16px, 3.5vw, 20px);
+      font-weight: 900;
+      color: var(--text-dark);
+      text-align: center;
+      flex: 1;
+    }
+    .story-page-indicator {
+      font-size: 14px;
+      font-weight: 800;
+      color: #7E57C2;
+      background: rgba(126,87,194,0.12);
+      padding: 5px 14px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .story-page-card {
+      width: 100%;
+      background: #FFFFFF;
+      border-radius: 32px;
+      border: 3px solid rgba(0,0,0,0.06);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.08);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: background-color 0.4s ease;
+    }
+    .story-illustration-area {
+      width: 100%;
+      height: clamp(240px, 42vw, 360px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      box-sizing: border-box;
+      position: relative;
+    }
+    .story-illustration-area svg {
+      max-width: 100%;
+      max-height: 100%;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,0.08));
+      transition: transform 0.3s ease;
+    }
+    .story-illustration-area:hover svg {
+      transform: scale(1.02);
+    }
+    .story-text-area {
+      width: 100%;
+      padding: 22px 26px 28px;
+      box-sizing: border-box;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 10px 14px;
+      background: #FFFFFF;
+      border-top: 2px dashed rgba(0,0,0,0.08);
+    }
+    .story-word {
+      font-size: clamp(22px, 5vw, 32px);
+      font-weight: 900;
+      color: var(--text-dark);
+      padding: 6px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      user-select: none;
+      border: 2px solid transparent;
+    }
+    .story-word:hover {
+      background: #EDE7F6;
+      border-color: #7E57C2;
+      color: #5E35B1;
+      transform: translateY(-2px);
+    }
+    .story-word.speaking {
+      background: #FFD54F !important;
+      border-color: #FFA000 !important;
+      color: #3E2723 !important;
+      transform: scale(1.15) !important;
+      box-shadow: 0 4px 14px rgba(255, 160, 0, 0.45);
+      z-index: 2;
+    }
+    .story-reader-controls {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .story-read-btn {
+      background: #7E57C2 !important;
+      color: white !important;
+      padding: 10px 22px !important;
+      font-size: 15px !important;
+      box-shadow: 0 4px 14px rgba(126,87,194,0.35) !important;
+    }
+    .story-read-btn.reading {
+      background: #E53935 !important;
+      box-shadow: 0 4px 14px rgba(229,57,53,0.35) !important;
+    }
+
+    /* Finish celebration screen */
+    .story-finish-view {
+      width: 100%;
+      background: #FFFFFF;
+      border-radius: 32px;
+      border: 3px solid #7E57C2;
+      box-shadow: 0 16px 40px rgba(126,87,194,0.18);
+      padding: 40px 24px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .story-finish-stars {
+      font-size: 54px;
+      margin-bottom: 12px;
+      animation: bounce 1s infinite alternate;
+    }
+    .story-finish-title {
+      font-size: clamp(24px, 5vw, 34px);
+      font-weight: 900;
+      color: #4A148C;
+      margin-bottom: 8px;
+    }
+    .story-finish-sub {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-mid);
+      max-width: 340px;
+      line-height: 1.5;
+      margin-bottom: 26px;
+    }
+    .story-finish-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      justify-content: center;
+    }
   </style>
 </head>
 <body>
@@ -569,6 +865,51 @@
     <button class="btn-control" id="nextBtn" onclick="nextCard()">Next →</button>
   </div>
   <div class="hint-text" id="hintText">Press SPACE to advance · ← to go back</div>
+</div>
+
+<!-- STORYBOOKS CONTAINER -->
+<div class="storybooks-container" id="storybooksContainer" style="display:none;">
+  <!-- View 1: Bookshelf / Library -->
+  <div class="story-library-view" id="storyLibraryView">
+    <div class="story-library-header">
+      <div class="story-shelf-title">📚 Storybook Shelf</div>
+      <div class="story-shelf-sub">Pick a picture book to read together!</div>
+    </div>
+    <div class="story-bookshelf-grid" id="storyBookshelfGrid"></div>
+  </div>
+
+  <!-- View 2: Picture Book Reader -->
+  <div class="story-reader-view" id="storyReaderView" style="display:none;">
+    <div class="story-reader-nav">
+      <button class="btn-pill" onclick="closeStoryReader()">← Bookshelf</button>
+      <div class="story-book-title" id="storyBookTitle">Book Title</div>
+      <div class="story-page-indicator" id="storyPageIndicator">Page 1 of 5</div>
+    </div>
+
+    <div class="story-page-card" id="storyPageCard">
+      <div class="story-illustration-area" id="storyIllustrationArea"></div>
+      <div class="story-text-area" id="storyTextArea"></div>
+    </div>
+
+    <!-- Celebration Finish State -->
+    <div class="story-finish-view" id="storyFinishView" style="display:none;">
+      <div class="story-finish-stars">⭐ 📖 ⭐</div>
+      <div class="story-finish-title">You finished the story!</div>
+      <div class="story-finish-sub" id="storyFinishSub">Wonderful job reading together! Ready for another adventure?</div>
+      <div class="story-finish-actions">
+        <button class="btn-control" onclick="restartCurrentStory()">Read Again 🔄</button>
+        <button class="btn-control primary" onclick="closeStoryReader()">More Books 📚</button>
+      </div>
+    </div>
+
+    <div class="story-reader-controls" id="storyReaderControls">
+      <button class="btn-control" id="storyPrevBtn" onclick="prevStoryPage()" disabled>◀ Previous</button>
+      <button class="btn-pill story-read-btn" id="storyReadBtn" onclick="toggleReadStoryPage()">
+        <span id="storyReadIcon">🔊</span> <span id="storyReadText">Read To Me</span>
+      </button>
+      <button class="btn-control primary" id="storyNextBtn" onclick="nextStoryPage()">Next Page ▶</button>
+    </div>
+  </div>
 </div>
 
 <div class="book-banner">
@@ -704,6 +1045,22 @@ const SVG = {
   <circle cx="57" cy="40" r="2.5" fill="#FFE0B2"/>
   <rect x="16" y="50" width="48" height="20" rx="10" fill="#FFA726"/>
   <text x="40" y="65" font-family="Nunito" font-size="13" font-weight="900" fill="white" text-anchor="middle">c - a - t</text>
+</svg>`,
+
+// Storybooks activity icon (open magical picture book with sparkles)
+'icon-storybooks': `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <path d="M10,24 Q40,16 40,28 L40,68 Q40,56 10,60 Z" fill="#7E57C2"/>
+  <path d="M70,24 Q40,16 40,28 L40,68 Q40,56 70,60 Z" fill="#9575CD"/>
+  <path d="M14,27 Q40,19 40,31 L40,64 Q40,54 14,57 Z" fill="#EDE7F6"/>
+  <path d="M66,27 Q40,19 40,31 L40,64 Q40,54 66,57 Z" fill="#FFFFFF"/>
+  <line x1="20" y1="38" x2="34" y2="38" stroke="#B39DDB" stroke-width="2" stroke-linecap="round"/>
+  <line x1="20" y1="46" x2="32" y2="46" stroke="#B39DDB" stroke-width="2" stroke-linecap="round"/>
+  <line x1="46" y1="38" x2="60" y2="38" stroke="#B39DDB" stroke-width="2" stroke-linecap="round"/>
+  <line x1="46" y1="46" x2="58" y2="46" stroke="#B39DDB" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="40" cy="18" r="4" fill="#FFD54F"/>
+  <path d="M40,11 L41.8,16 L46.5,18 L41.8,20 L40,25 L38.2,20 L33.5,18 L38.2,16 Z" fill="#FFCA28"/>
+  <circle cx="62" cy="16" r="2.5" fill="#FFD54F"/>
+  <circle cx="18" cy="18" r="2" fill="#FFD54F"/>
 </svg>`,
 
 // ═══════════════════════════════════════════════
@@ -4151,10 +4508,608 @@ const PHONICS_CARDS = [
   { id:'ph-p5', word:'CAN THE FROG JUMP', stage:6, phonetic:'/kæn ðə frɒɡ dʒʌmp/', decodableWords:['CAN','THE','FROG','JUMP'], prompt:'Sound out: CAN · THE · FROG · JUMP' },
 ];
 
+
+// ═══════════════════════════════════════════════
+//  STORYBOOK ILLUSTRATIONS (SVGs for 4 books)
+// ═══════════════════════════════════════════════
+const STORY_SVGS = {
+  // ── BOOK 1: THE LITTLE CAT & THE BIG STAR ──
+  'cover-cat-star': `<svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="g-cover-cs" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#1A237E"/>
+        <stop offset="100%" stop-color="#3949AB"/>
+      </linearGradient>
+    </defs>
+    <rect width="320" height="220" fill="url(#g-cover-cs)"/>
+    <circle cx="50" cy="40" r="1.5" fill="#FFF"/>
+    <circle cx="110" cy="65" r="2" fill="#FFF"/>
+    <circle cx="280" cy="50" r="1.5" fill="#FFF"/>
+    <circle cx="240" cy="85" r="2" fill="#FFF"/>
+    <!-- Moon -->
+    <path d="M70,35 A22,22 0 0,0 92,57 A24,24 0 1,1 70,35 Z" fill="#FFE082"/>
+    <!-- Giant Glowing Star -->
+    <polygon points="200,30 206,45 222,46 210,56 214,72 200,62 186,72 190,56 178,46 194,45" fill="#FFD54F" filter="drop-shadow(0 0 12px #FFD54F)"/>
+    <!-- Hills -->
+    <ellipse cx="160" cy="240" rx="200" ry="60" fill="#283593"/>
+    <!-- Cat silhouette on fence -->
+    <rect x="130" y="160" width="60" height="8" rx="2" fill="#1A237E"/>
+    <ellipse cx="160" cy="155" rx="16" ry="18" fill="#FFB74D"/>
+    <circle cx="160" cy="136" r="12" fill="#FFB74D"/>
+    <polygon points="151,127 156,122 158,128" fill="#FF9800"/>
+    <polygon points="169,127 164,122 162,128" fill="#FF9800"/>
+    <path d="M174,162 Q188,166 186,150" stroke="#FFB74D" stroke-width="4" fill="none" stroke-linecap="round"/>
+  </svg>`,
+
+  'cat-star-p1': `<svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+    <!-- Room wall -->
+    <rect width="320" height="220" fill="#EDE7F6"/>
+    <!-- Window frame -->
+    <rect x="60" y="20" width="200" height="150" rx="8" fill="#283593" stroke="#5C6BC0" stroke-width="6"/>
+    <!-- Window glass twilight -->
+    <rect x="66" y="26" width="188" height="138" fill="#1A237E"/>
+    <!-- Stars in window -->
+    <circle cx="100" cy="50" r="2" fill="#FFF"/>
+    <circle cx="210" cy="45" r="2" fill="#FFF"/>
+    <circle cx="150" cy="80" r="2.5" fill="#FFF9C4"/>
+    <circle cx="85" cy="110" r="1.5" fill="#FFF"/>
+    <!-- Window crossbar -->
+    <line x1="160" y1="26" x2="160" y2="164" stroke="#5C6BC0" stroke-width="4"/>
+    <line x1="66" y1="95" x2="254" y2="95" stroke="#5C6BC0" stroke-width="4"/>
+    <!-- Window sill -->
+    <rect x="40" y="166" width="240" height="16" rx="4" fill="#8D6E63"/>
+    <!-- Cat sitting on sill looking out -->
+    <ellipse cx="160" cy="155" rx="20" ry="22" fill="#FF9800"/>
+    <circle cx="160" cy="130" r="15" fill="#FF9800"/>
+    <polygon points="149,118 155,110 158,118" fill="#E65100"/>
+    <polygon points="171,118 165,110 162,118" fill="#E65100"/>
+    <!-- Cat eyes & nose looking away/profile -->
+    <circle cx="154" cy="128" r="2.5" fill="#3E2723"/>
+    <circle cx="166" cy="128" r="2.5" fill="#3E2723"/>
+    <polygon points="160,132 158,135 162,135" fill="#F48FB1"/>
+    <!-- Curtains -->
+    <path d="M56,20 Q70,90 44,170 L30,170 L30,20 Z" fill="#9575CD"/>
+    <path d="M264,20 Q250,90 276,170 L290,170 L290,20 Z" fill="#9575CD"/>
+  </svg>`,
+
+  'cat-star-p2': `<svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+    <!-- Deep night sky -->
+    <rect width="320" height="220" fill="#0D1B2A"/>
+    <!-- Glow aura -->
+    <circle cx="160" cy="100" r="65" fill="#FFE082" opacity="0.18"/>
+    <circle cx="160" cy="100" r="45" fill="#FFF59D" opacity="0.25"/>
+    <!-- Big glowing star -->
+    <polygon points="160,35 170,75 210,80 180,108 190,150 160,126 130,150 140,108 110,80 150,75" fill="#FFD54F" filter="drop-shadow(0 0 16px #FFCA28)"/>
+    <!-- Smiling star face -->
+    <circle cx="152" cy="95" r="3.5" fill="#5D4037"/>
+    <circle cx="168" cy="95" r="3.5" fill="#5D4037"/>
+    <path d="M154,105 Q160,112 166,105" stroke="#5D4037" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="147" cy="100" rx="3" ry="2" fill="#FF8A80"/>
+    <ellipse cx="173" cy="100" rx="3" ry="2" fill="#FF8A80"/>
+    <!-- Little twinkling companion stars -->
+    <polygon points="60,60 63,68 71,69 65,75 67,83 60,78 53,83 55,75 49,69 57,68" fill="#FFF9C4"/>
+    <polygon points="255,130 258,136 264,137 259,141 261,147 255,143 249,147 251,141 246,137 252,136" fill="#FFF9C4"/>
+    <polygon points="80,150 82,155 87,156 83,160 84,165 80,162 76,165 77,160 73,156 78,155" fill="#FFF9C4"/>
+  </svg>`,
+
+  'cat-star-p3': `<svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+    <rect width="320" height="220" fill="#EDE7F6"/>
+    <!-- Window pane -->
+    <rect x="40" y="10" width="240" height="150" rx="8" fill="#1A237E" stroke="#5C6BC0" stroke-width="5"/>
+    <polygon points="160,35 166,50 182,51 170,61 174,77 160,67 146,77 150,61 138,51 154,50" fill="#FFD54F"/>
+    <!-- Window sill -->
+    <rect x="20" y="156" width="280" height="14" rx="4" fill="#8D6E63"/>
+    <!-- Cat standing reaching paw up -->
+    <ellipse cx="160" cy="150" rx="22" ry="28" fill="#FF9800"/>
+    <circle cx="160" cy="116" r="16" fill="#FF9800"/>
+    <polygon points="148,103 154,95 158,103" fill="#E65100"/>
+    <polygon points="172,103 166,95 162,103" fill="#E65100"/>
+    <!-- Wide cute happy eyes -->
+    <circle cx="153" cy="114" r="3.5" fill="#3E2723"/>
+    <circle cx="167" cy="114" r="3.5" fill="#3E2723"/>
+    <circle cx="154" cy="112" r="1" fill="#FFF"/>
+    <circle cx="168" cy="112" r="1" fill="#FFF"/>
+    <polygon points="160,119 157,122 163,122" fill="#F48FB1"/>
+    <!-- Reaching paw touching window -->
+    <path d="M168,135 Q178,100 174,78" stroke="#FF9800" stroke-width="9" fill="none" stroke-linecap="round"/>
+    <circle cx="174" cy="74" r="6" fill="#FFB74D"/>
+    <!-- Paw pad -->
+    <circle cx="174" cy="74" r="2.5" fill="#F48FB1"/>
+  </svg>`,
+
+  'cat-star-p4': `<svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+    <rect width="320" height="220" fill="#0D1B2A"/>
+    <!-- Big star winking -->
+    <polygon points="160,25 173,65 215,70 183,98 193,142 160,118 127,142 137,98 105,70 147,65" fill="#FFD54F" filter="drop-shadow(0 0 20px #FFCA28)"/>
+    <!-- One open eye, one winking eye -->
+    <path d="M145,86 Q151,80 157,86" stroke="#5D4037" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <circle cx="171" cy="85" r="4" fill="#5D4037"/>
+    <circle cx="172.5" cy="83" r="1.5" fill="#FFF"/>
+    <!-- Cute smile -->
+    <path d="M153,98 Q160,106 167,98" stroke="#5D4037" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- Cheeks -->
+    <ellipse cx="143" cy="93" rx="3.5" ry="2.5" fill="#FF8A80"/>
+    <ellipse cx="177" cy="93" rx="3.5" ry="2.5" fill="#FF8A80"/>
+    <!-- Musical gentle sparkle dust -->
+    <circle cx="130" cy="140" r="3" fill="#FFF9C4" opacity="0.8"/>
+    <circle cx="150" cy="165" r="2" fill="#FFF9C4" opacity="0.9"/>
+    <circle cx="180" cy="155" r="3.5" fill="#FFF9C4" opacity="0.85"/>
+    <circle cx="205" cy="135" r="2.5" fill="#FFF9C4" opacity="0.7"/>
+    <text x="160" y="200" font-family="Nunito" font-size="14" font-weight="900" fill="#B39DDB" text-anchor="middle">✨ Sweet dreams, little cat ✨</text>
+  </svg>`,
+
+  'cat-star-p5': `<svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+    <rect width="320" height="220" fill="#EDE7F6"/>
+    <!-- Braided floor rug -->
+    <ellipse cx="160" cy="165" rx="105" ry="40" fill="#D1C4E9"/>
+    <ellipse cx="160" cy="165" rx="85" ry="30" fill="#B39DDB"/>
+    <!-- Curled sleeping cat -->
+    <ellipse cx="160" cy="158" rx="42" ry="32" fill="#FF9800"/>
+    <!-- Cat head tucked in -->
+    <circle cx="132" cy="152" r="20" fill="#FF9800"/>
+    <polygon points="120,136 126,128 131,136" fill="#E65100"/>
+    <polygon points="137,135 142,127 146,135" fill="#E65100"/>
+    <!-- Sleeping closed eyes (cute curves) -->
+    <path d="M125,152 Q128,156 131,152" stroke="#3E2723" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M136,152 Q139,156 142,152" stroke="#3E2723" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <ellipse cx="123" cy="156" rx="3" ry="1.5" fill="#F48FB1"/>
+    <!-- Tail wrapped around -->
+    <path d="M198,162 Q206,142 186,134 Q165,130 152,138" stroke="#FF9800" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <!-- Dream Zzz -->
+    <text x="195" y="115" font-family="Nunito" font-size="16" font-weight="900" fill="#7E57C2">Z</text>
+    <text x="210" y="95" font-family="Nunito" font-size="20" font-weight="900" fill="#7E57C2">z</text>
+    <text x="228" y="75" font-family="Nunito" font-size="24" font-weight="900" fill="#7E57C2">z</text>
+    <!-- Little dream star floating -->
+    <polygon points="255,50 258,56 265,57 260,61 262,67 255,63 248,67 250,61 245,57 252,56" fill="#FFD54F"/>
+  </svg>`,
+
+  // ── BOOK 2: PIP'S BUSY DAY ──
+  'cover-pips-day': `<svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+    <rect width="320" height="220" fill="#80CBC4"/>
+    <circle cx="280" cy="40" r="30" fill="#FFF59D"/>
+    <!-- Green meadow -->
+    <ellipse cx="160" cy="240" rx="190" ry="65" fill="#4DB6AC"/>
+    <!-- Puppy Pip -->
+    <ellipse cx="160" cy="145" rx="36" ry="30" fill="#FFB74D"/>
+    <circle cx="160" cy="105" r="26" fill="#FFB74D"/>
+    <!-- Floppy puppy ears -->
+    <ellipse cx="130" cy="105" rx="8" ry="18" fill="#F57C00" transform="rotate(15 130 105)"/>
+    <ellipse cx="190" cy="105" rx="8" ry="18" fill="#F57C00" transform="rotate(-15 190 105)"/>
+    <!-- Happy eyes -->
+    <circle cx="150" cy="100" r="3.5" fill="#3E2723"/>
+    <circle cx="170" cy="100" r="3.5" fill="#3E2723"/>
+    <ellipse cx="160" cy="110" rx="4" ry="3" fill="#3E2723"/>
+    <!-- Tongue out -->
+    <path d="M158,114 Q160,123 162,114" stroke="#F48FB1" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <!-- Bone in paws -->
+    <rect x="140" y="160" width="40" height="8" rx="4" fill="#FFFFFF"/>
+    <circle cx="139" cy="164" r="5" fill="#FFFFFF"/>
+    <circle cx="181" cy="164" r="5" fill="#FFFFFF"/>
+  </svg>`,
+
+  'pips-day-p1': `<svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+    <rect width="320" height="220" fill="#FFF9C4"/>
+    <!-- Morning sun rays -->
+    <circle cx="40" cy="40" r="24" fill="#FFE082"/>
+    <line x1="72" y1="40" x2="88" y2="40" stroke="#FFD54F" stroke-width="4" stroke-linecap="round"/>
+    <line x1="62" y1="62" x2="76" y2="76" stroke="#FFD54F" stroke-width="4" stroke-linecap="round"/>
+    <line x1="40" y1="72" x2="40" y2="88" stroke="#FFD54F" stroke-width="4" stroke-linecap="round"/>
+    <!-- Cozy round dog bed -->
+    <ellipse cx="160" cy="160" rx="90" ry="40" fill="#E57373"/>
+    <ellipse cx="160" cy="156" rx="74" ry="28" fill="#FFCDD2"/>
+    <!-- Pip stretching front paws forward -->
+    <ellipse cx="150" cy="145" rx="30" ry="22" fill="#FFB74D"/>
+    <circle cx="180" cy="130" r="20" fill="#FFB74D"/>
+    <ellipse cx="196" cy="130" rx="6" ry="14" fill="#F57C00"/>
+    <!-- Stretch paws -->
+    <rect x="195" y="145" width="22" height="7" rx="3" fill="#FFB74D"/>
+    <!-- Wagging tail with motion lines -->
+    <path d="M122,142 Q110,125 116,115" stroke="#FFB74D" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M106,120 Q102,126 106,132" stroke="#B0BEC5" stroke-width="2" fill="none"/>
+    <path d="M100,122 Q96,126 100,130" stroke="#B0BEC5" stroke-width="2" fill="none"/>
+    <!-- Happy wake-up eyes -->
+    <circle cx="178" cy="126" r="3" fill="#3E2723"/>
+    <ellipse cx="186" cy="133" rx="3" ry="2" fill="#3E2723"/>
+  </svg>`,
+
+  'pips-day-p2': `<svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+    <rect width="320" height="220" fill="#FFF8E1"/>
+    <!-- Floor mat -->
+    <ellipse cx="160" cy="180" rx="100" ry="25" fill="#FFE0B2"/>
+    <!-- Big Blue Food Bowl -->
+    <ellipse cx="190" cy="165" rx="36" ry="16" fill="#1976D2"/>
+    <ellipse cx="190" cy="160" rx="32" ry="12" fill="#42A5F5"/>
+    <!-- Crunchy dog treats inside -->
+    <circle cx="178" cy="160" r="5" fill="#8D6E63"/>
+    <circle cx="190" cy="158" r="6" fill="#A1887F"/>
+    <circle cx="202" cy="161" r="5" fill="#8D6E63"/>
+    <!-- Pip eating with face down -->
+    <ellipse cx="115" cy="145" rx="30" ry="22" fill="#FFB74D"/>
+    <circle cx="145" cy="136" r="18" fill="#FFB74D"/>
+    <ellipse cx="132" cy="132" rx="6" ry="14" fill="#F57C00" transform="rotate(-20 132 132)"/>
+    <!-- Happy eating marks -->
+    <text x="180" y="130" font-family="Nunito" font-size="14" font-weight="900" fill="#E65100">Yum!</text>
+  </svg>`,
+
+  'pips-day-p3': `<svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+    <rect width="320" height="220" fill="#E8F5E9"/>
+    <!-- Green park grass -->
+    <rect x="0" y="160" width="320" height="60" fill="#81C784"/>
+    <!-- Pip leaping in air -->
+    <g transform="translate(100, 70) rotate(-15)">
+      <ellipse cx="40" cy="35" rx="32" ry="22" fill="#FFB74D"/>
+      <circle cx="70" cy="24" r="18" fill="#FFB74D"/>
+      <ellipse cx="85" cy="22" rx="6" ry="14" fill="#F57C00" transform="rotate(30 85 22)"/>
+      <circle cx="74" cy="20" r="3" fill="#3E2723"/>
+      <ellipse cx="80" cy="26" rx="3" ry="2" fill="#3E2723"/>
+      <path d="M12,38 Q0,32 5,20" stroke="#FFB74D" stroke-width="6" fill="none" stroke-linecap="round"/>
+    </g>
+    <!-- Bright red bouncy ball -->
+    <circle cx="230" cy="120" r="22" fill="#E53935"/>
+    <path d="M210,120 Q230,105 250,120" stroke="#FFFFFF" stroke-width="4" fill="none"/>
+    <ellipse cx="230" cy="180" rx="18" ry="6" fill="#388E3C" opacity="0.3"/>
+    <!-- Bounce dashed line -->
+    <path d="M190,170 Q210,100 230,120" stroke="#FFA726" stroke-width="3" stroke-dasharray="6,4" fill="none"/>
+  </svg>`,
+
+  'pips-day-p4': `<svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+    <rect width="320" height="220" fill="#E1F5FE"/>
+    <!-- Mud puddle -->
+    <ellipse cx="160" cy="175" rx="95" ry="32" fill="#795548"/>
+    <ellipse cx="160" cy="172" rx="85" ry="26" fill="#8D6E63"/>
+    <!-- Splash droplets -->
+    <ellipse cx="90" cy="140" rx="6" ry="10" fill="#8D6E63" transform="rotate(-30 90 140)"/>
+    <ellipse cx="230" cy="140" rx="6" ry="10" fill="#8D6E63" transform="rotate(30 230 140)"/>
+    <circle cx="120" cy="120" r="4" fill="#8D6E63"/>
+    <circle cx="200" cy="115" r="4.5" fill="#8D6E63"/>
+    <!-- Pip in middle splashing -->
+    <ellipse cx="160" cy="140" rx="32" ry="24" fill="#FFB74D"/>
+    <circle cx="160" cy="105" r="20" fill="#FFB74D"/>
+    <!-- Mud spots on Pip -->
+    <circle cx="150" cy="135" r="5" fill="#795548"/>
+    <circle cx="168" cy="145" r="4" fill="#795548"/>
+    <circle cx="170" cy="105" r="3" fill="#795548"/>
+    <!-- Huge cheeky smile -->
+    <circle cx="153" cy="100" r="3" fill="#3E2723"/>
+    <circle cx="167" cy="100" r="3" fill="#3E2723"/>
+    <path d="M154,110 Q160,120 166,110" stroke="#3E2723" stroke-width="2.5" fill="#F48FB1"/>
+    <text x="160" y="50" font-family="Nunito" font-size="20" font-weight="900" fill="#0288D1" text-anchor="middle">Splish Splash!</text>
+  </svg>`,
+
+  'pips-day-p5': `<svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+    <rect width="320" height="220" fill="#F9FBE7"/>
+    <!-- Blue towel nest -->
+    <ellipse cx="160" cy="160" rx="90" ry="38" fill="#81D4FA"/>
+    <ellipse cx="160" cy="155" rx="76" ry="28" fill="#B3E5FC"/>
+    <!-- Clean sleeping Pip -->
+    <ellipse cx="150" cy="145" rx="36" ry="24" fill="#FFB74D"/>
+    <circle cx="125" cy="138" r="18" fill="#FFB74D"/>
+    <ellipse cx="112" cy="142" rx="6" ry="14" fill="#F57C00"/>
+    <!-- Sleep eyes -->
+    <path d="M120,138 Q124,142 128,138" stroke="#3E2723" stroke-width="2" fill="none"/>
+    <ellipse cx="115" cy="142" rx="2.5" ry="1.5" fill="#F48FB1"/>
+    <!-- Mini teddy bear next to Pip -->
+    <circle cx="185" cy="140" r="11" fill="#8D6E63"/>
+    <circle cx="177" cy="132" r="3.5" fill="#6D4C41"/>
+    <circle cx="193" cy="132" r="3.5" fill="#6D4C41"/>
+    <text x="160" y="80" font-family="Nunito" font-size="18" font-weight="900" fill="#9E9D24" text-anchor="middle">Goodnight Pip! 💤</text>
+  </svg>`,
+
+  // ── BOOK 3: THE MAGIC SEED ──
+  'cover-magic-seed': `<svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+    <rect width="320" height="220" fill="#C8E6C9"/>
+    <!-- Bright sun -->
+    <circle cx="260" cy="45" r="30" fill="#FFF59D"/>
+    <!-- Garden earth -->
+    <rect x="0" y="160" width="320" height="60" fill="#6D4C41"/>
+    <!-- Sunflower -->
+    <path d="M160,170 Q158,110 160,70" stroke="#4CAF50" stroke-width="8" fill="none"/>
+    <!-- Leaves -->
+    <ellipse cx="140" cy="125" rx="18" ry="8" fill="#66BB6A" transform="rotate(-25 140 125)"/>
+    <ellipse cx="180" cy="105" rx="18" ry="8" fill="#66BB6A" transform="rotate(25 180 105)"/>
+    <!-- Flower Petals -->
+    <circle cx="160" cy="70" r="35" fill="#FFD54F"/>
+    <circle cx="160" cy="70" r="20" fill="#795548"/>
+    <!-- Smiling flower face -->
+    <circle cx="154" cy="67" r="2.5" fill="#FFF"/>
+    <circle cx="166" cy="67" r="2.5" fill="#FFF"/>
+    <path d="M156,74 Q160,78 164,74" stroke="#FFF" stroke-width="1.8" fill="none"/>
+  </svg>`,
+
+  'magic-seed-p1': `<svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+    <rect width="320" height="220" fill="#F1F8E9"/>
+    <!-- Ground soil layer -->
+    <rect x="0" y="120" width="320" height="100" fill="#5D4037"/>
+    <ellipse cx="160" cy="130" rx="180" ry="20" fill="#6D4C41"/>
+    <!-- Neat dug hole in soil -->
+    <ellipse cx="160" cy="135" rx="40" ry="18" fill="#3E2723"/>
+    <!-- Garden Trowel -->
+    <g transform="translate(190, 80) rotate(35)">
+      <path d="M0,0 L35,10 L30,24 L0,12 Z" fill="#78909C"/>
+      <rect x="-24" y="2" width="26" height="8" rx="3" fill="#FF7043"/>
+    </g>
+    <text x="160" y="55" font-family="Nunito" font-size="16" font-weight="900" fill="#33691E" text-anchor="middle">Dig, dig, dig!</text>
+  </svg>`,
+
+  'magic-seed-p2': `<svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+    <rect width="320" height="220" fill="#EFEBE9"/>
+    <rect x="0" y="130" width="320" height="90" fill="#4E342E"/>
+    <ellipse cx="160" cy="135" rx="42" ry="18" fill="#3E2723"/>
+    <!-- Cute striped seed nestled in earth -->
+    <ellipse cx="160" cy="136" rx="14" ry="9" fill="#D7CCC8"/>
+    <ellipse cx="160" cy="136" rx="12" ry="7" fill="#8D6E63"/>
+    <line x1="152" y1="136" x2="168" y2="136" stroke="#D7CCC8" stroke-width="2"/>
+    <!-- Sparkle on seed -->
+    <polygon points="160,118 162,123 167,124 163,127 164,132 160,129 156,132 157,127 153,124 158,123" fill="#FFD54F"/>
+    <text x="160" y="60" font-family="Nunito" font-size="16" font-weight="900" fill="#5D4037" text-anchor="middle">Rest tight, little seed 🌱</text>
+  </svg>`,
+
+  'magic-seed-p3': `<svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+    <rect width="320" height="220" fill="#E3F2FD"/>
+    <!-- Big smiling sun -->
+    <circle cx="260" cy="45" r="28" fill="#FFD54F"/>
+    <circle cx="253" cy="42" r="3" fill="#5D4037"/>
+    <circle cx="267" cy="42" r="3" fill="#5D4037"/>
+    <path d="M256,51 Q260,56 264,51" stroke="#5D4037" stroke-width="2" fill="none"/>
+    <!-- Soil -->
+    <rect x="0" y="160" width="320" height="60" fill="#5D4037"/>
+    <!-- Yellow watering can pouring -->
+    <g transform="translate(60, 40) rotate(20)">
+      <rect x="20" y="20" width="46" height="40" rx="8" fill="#FBC02D"/>
+      <path d="M66,35 L95,20" stroke="#FBC02D" stroke-width="7" stroke-linecap="round"/>
+      <circle cx="97" cy="19" r="7" fill="#FBC02D"/>
+      <path d="M20,30 Q-5,40 20,55" stroke="#F57F17" stroke-width="5" fill="none"/>
+    </g>
+    <!-- Water droplets -->
+    <circle cx="160" cy="115" r="3.5" fill="#42A5F5"/>
+    <circle cx="152" cy="130" r="4" fill="#29B6F6"/>
+    <circle cx="168" cy="135" r="3.5" fill="#42A5F5"/>
+    <circle cx="160" cy="150" r="4.5" fill="#29B6F6"/>
+  </svg>`,
+
+  'magic-seed-p4': `<svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+    <rect width="320" height="220" fill="#E8F5E9"/>
+    <!-- Soil mound -->
+    <rect x="0" y="150" width="320" height="70" fill="#5D4037"/>
+    <ellipse cx="160" cy="152" rx="40" ry="10" fill="#4E342E"/>
+    <!-- Green sprout stem -->
+    <path d="M160,152 Q158,115 160,95" stroke="#66BB6A" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <!-- 2 cute heart-shaped leaves -->
+    <path d="M160,98 Q140,82 135,95 Q145,108 160,102 Z" fill="#4CAF50"/>
+    <path d="M160,98 Q180,82 185,95 Q175,108 160,102 Z" fill="#4CAF50"/>
+    <!-- Sparkles -->
+    <text x="160" y="45" font-family="Nunito" font-size="20" font-weight="900" fill="#2E7D32" text-anchor="middle">Pop! 🌱</text>
+  </svg>`,
+
+  'magic-seed-p5': `<svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+    <rect width="320" height="220" fill="#FFFDE7"/>
+    <!-- Garden ground -->
+    <rect x="0" y="175" width="320" height="45" fill="#4CAF50"/>
+    <!-- Big tall stem -->
+    <path d="M160,185 Q158,120 160,75" stroke="#388E3C" stroke-width="10" fill="none"/>
+    <!-- Leaves -->
+    <path d="M156,130 Q120,110 115,130 Q135,145 156,136 Z" fill="#4CAF50"/>
+    <path d="M164,115 Q200,95 205,115 Q185,130 164,121 Z" fill="#4CAF50"/>
+    <!-- Giant Sunflower Petals -->
+    <circle cx="160" cy="72" r="44" fill="#FBC02D"/>
+    <circle cx="160" cy="72" r="26" fill="#5D4037"/>
+    <!-- Big happy smile on sunflower -->
+    <circle cx="152" cy="68" r="3.5" fill="#FFE082"/>
+    <circle cx="168" cy="68" r="3.5" fill="#FFE082"/>
+    <path d="M154,78 Q160,84 166,78" stroke="#FFE082" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- Fluttering butterfly -->
+    <g transform="translate(230, 45)">
+      <ellipse cx="0" cy="0" rx="8" ry="12" fill="#BA68C8"/>
+      <ellipse cx="14" cy="0" rx="8" ry="12" fill="#BA68C8"/>
+      <line x1="7" y1="-10" x2="7" y2="10" stroke="#4A148C" stroke-width="2"/>
+    </g>
+  </svg>`,
+
+  // ── BOOK 4: WHERE IS MY TEDDY? ──
+  'cover-where-teddy': `<svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+    <rect width="320" height="220" fill="#F8BBD0"/>
+    <!-- Heart sparkles in background -->
+    <circle cx="60" cy="50" r="14" fill="#F48FB1" opacity="0.4"/>
+    <circle cx="260" cy="65" r="18" fill="#F48FB1" opacity="0.4"/>
+    <!-- Cute Teddy Bear -->
+    <circle cx="160" cy="115" r="38" fill="#8D6E63"/>
+    <!-- Ears -->
+    <circle cx="132" cy="85" r="14" fill="#8D6E63"/>
+    <circle cx="132" cy="85" r="8" fill="#D7CCC8"/>
+    <circle cx="188" cy="85" r="14" fill="#8D6E63"/>
+    <circle cx="188" cy="85" r="8" fill="#D7CCC8"/>
+    <!-- Muzzle -->
+    <ellipse cx="160" cy="124" rx="16" ry="12" fill="#D7CCC8"/>
+    <ellipse cx="160" cy="120" rx="5" ry="3.5" fill="#3E2723"/>
+    <path d="M160,124 L160,129" stroke="#3E2723" stroke-width="2"/>
+    <path d="M156,128 Q160,132 164,128" stroke="#3E2723" stroke-width="2" fill="none"/>
+    <!-- Eyes -->
+    <circle cx="147" cy="110" r="4" fill="#3E2723"/>
+    <circle cx="173" cy="110" r="4" fill="#3E2723"/>
+    <!-- Red Bow tie -->
+    <polygon points="146,150 160,154 146,158" fill="#E53935"/>
+    <polygon points="174,150 160,154 174,158" fill="#E53935"/>
+    <circle cx="160" cy="154" r="4" fill="#D32F2F"/>
+  </svg>`,
+
+  'where-teddy-p1': `<svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+    <rect width="320" height="220" fill="#FCE4EC"/>
+    <!-- Playroom floor -->
+    <rect x="0" y="160" width="320" height="60" fill="#F8BBD0"/>
+    <!-- Toddler looking around with hands out -->
+    <circle cx="160" cy="80" r="28" fill="#FFCCBC"/>
+    <ellipse cx="160" cy="135" rx="22" ry="30" fill="#42A5F5"/>
+    <!-- Wide wonder eyes -->
+    <circle cx="150" cy="76" r="4.5" fill="#3E2723"/>
+    <circle cx="170" cy="76" r="4.5" fill="#3E2723"/>
+    <circle cx="152" cy="74" r="1.5" fill="#FFF"/>
+    <circle cx="172" cy="74" r="1.5" fill="#FFF"/>
+    <!-- Questioning mouth -->
+    <circle cx="160" cy="90" r="3.5" fill="#E57373"/>
+    <!-- Arms reaching out -->
+    <path d="M140,120 Q105,100 110,85" stroke="#FFCCBC" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <path d="M180,120 Q215,100 210,85" stroke="#FFCCBC" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <text x="160" y="36" font-family="Nunito" font-size="20" font-weight="900" fill="#C2185B" text-anchor="middle">Teddy? Where are you?</text>
+  </svg>`,
+
+  'where-teddy-p2': `<svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+    <rect width="320" height="220" fill="#EDE7F6"/>
+    <!-- Bed frame and blanket hanging down -->
+    <rect x="20" y="40" width="280" height="60" rx="6" fill="#7E57C2"/>
+    <path d="M20,100 Q60,115 100,100 Q140,115 180,100 Q220,115 260,100 Q280,108 300,100 L300,40 L20,40 Z" fill="#9575CD"/>
+    <!-- Dark shadow under bed -->
+    <rect x="30" y="105" width="260" height="65" fill="#311B92"/>
+    <!-- Fluffy bunny slippers under bed -->
+    <ellipse cx="130" cy="145" rx="18" ry="12" fill="#FFFFFF"/>
+    <ellipse cx="124" cy="132" rx="4" ry="10" fill="#F8BBD0"/>
+    <ellipse cx="136" cy="132" rx="4" ry="10" fill="#F8BBD0"/>
+    <circle cx="130" cy="144" r="2" fill="#E91E63"/>
+
+    <ellipse cx="180" cy="145" rx="18" ry="12" fill="#FFFFFF"/>
+    <ellipse cx="174" cy="132" rx="4" ry="10" fill="#F8BBD0"/>
+    <ellipse cx="186" cy="132" rx="4" ry="10" fill="#F8BBD0"/>
+    <circle cx="180" cy="144" r="2" fill="#E91E63"/>
+    <text x="160" y="195" font-family="Nunito" font-size="15" font-weight="900" fill="#5E35B1" text-anchor="middle">Just fluffy slippers!</text>
+  </svg>`,
+
+  'where-teddy-p3': `<svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+    <rect width="320" height="220" fill="#FFF3E0"/>
+    <!-- Big wooden toy chest open -->
+    <rect x="60" y="90" width="200" height="85" rx="8" fill="#FB8C00"/>
+    <!-- Chest lid open up -->
+    <polygon points="50,90 270,90 255,45 65,45" fill="#FFA726"/>
+    <!-- Inside chest: Toy blocks A, B, C and train -->
+    <rect x="85" y="110" width="30" height="30" rx="4" fill="#E53935"/>
+    <text x="100" y="132" font-family="Nunito" font-size="18" font-weight="900" fill="#FFF" text-anchor="middle">A</text>
+    <rect x="125" y="105" width="30" height="30" rx="4" fill="#1E88E5"/>
+    <text x="140" y="127" font-family="Nunito" font-size="18" font-weight="900" fill="#FFF" text-anchor="middle">B</text>
+    <rect x="165" y="112" width="30" height="30" rx="4" fill="#43A047"/>
+    <text x="180" y="134" font-family="Nunito" font-size="18" font-weight="900" fill="#FFF" text-anchor="middle">C</text>
+    <!-- Toy train -->
+    <rect x="205" y="125" width="38" height="20" rx="3" fill="#AB47BC"/>
+    <circle cx="215" cy="148" r="5" fill="#37474F"/>
+    <circle cx="233" cy="148" r="5" fill="#37474F"/>
+    <text x="160" y="30" font-family="Nunito" font-size="16" font-weight="900" fill="#E65100" text-anchor="middle">No Teddy here!</text>
+  </svg>`,
+
+  'where-teddy-p4': `<svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+    <rect width="320" height="220" fill="#E8EAF6"/>
+    <!-- Big cozy armchair -->
+    <path d="M70,180 L70,80 Q70,60 90,60 L230,60 Q250,60 250,80 L250,180 Z" fill="#3F51B5"/>
+    <ellipse cx="160" cy="170" rx="75" ry="20" fill="#283593"/>
+    <!-- Teddy ears peeking over top of chair! -->
+    <circle cx="135" cy="55" r="16" fill="#8D6E63"/>
+    <circle cx="135" cy="55" r="9" fill="#D7CCC8"/>
+    <circle cx="185" cy="55" r="16" fill="#8D6E63"/>
+    <circle cx="185" cy="55" r="9" fill="#D7CCC8"/>
+    <!-- Round teddy paws peeking on sides -->
+    <ellipse cx="64" cy="115" rx="10" ry="14" fill="#8D6E63"/>
+    <ellipse cx="256" cy="115" rx="10" ry="14" fill="#8D6E63"/>
+    <text x="160" y="25" font-family="Nunito" font-size="16" font-weight="900" fill="#1A237E" text-anchor="middle">Look at those fuzzy ears! 👀</text>
+  </svg>`,
+
+  'where-teddy-p5': `<svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+    <rect width="320" height="220" fill="#FCE4EC"/>
+    <!-- Giant love hearts -->
+    <path d="M160,50 C140,20 100,30 110,65 C120,95 160,120 160,120 C160,120 200,95 210,65 C220,30 180,20 160,50 Z" fill="#FF80AB" opacity="0.4"/>
+    <!-- Happy toddler hugging Teddy -->
+    <ellipse cx="160" cy="140" rx="36" ry="42" fill="#42A5F5"/>
+    <!-- Teddy in the hug -->
+    <ellipse cx="160" cy="145" rx="26" ry="24" fill="#8D6E63"/>
+    <circle cx="160" cy="120" r="18" fill="#8D6E63"/>
+    <circle cx="146" cy="108" r="7" fill="#8D6E63"/>
+    <circle cx="174" cy="108" r="7" fill="#8D6E63"/>
+    <!-- Hugging arms -->
+    <path d="M125,135 Q145,155 160,150" stroke="#FFCCBC" stroke-width="12" stroke-linecap="round" fill="none"/>
+    <path d="M195,135 Q175,155 160,150" stroke="#FFCCBC" stroke-width="12" stroke-linecap="round" fill="none"/>
+    <!-- Child face smiling big -->
+    <circle cx="140" cy="95" r="20" fill="#FFCCBC"/>
+    <circle cx="136" cy="92" r="3" fill="#3E2723"/>
+    <path d="M134,102 Q142,108 148,102" stroke="#3E2723" stroke-width="2" fill="none"/>
+    <text x="160" y="205" font-family="Nunito" font-size="18" font-weight="900" fill="#C2185B" text-anchor="middle">Warm Teddy Hugs! ❤️</text>
+  </svg>`
+};
+
+
+// ═══════════════════════════════════════════════
+//  STORYBOOKS DATASET (4 Toddler Picture Books)
+// ═══════════════════════════════════════════════
+const STORYBOOKS = [
+  {
+    id: 'cat-star',
+    title: 'The Little Cat & The Big Star',
+    coverSvg: 'cover-cat-star',
+    badge: 'Bedtime · Wonder',
+    description: 'A gentle bedtime story about a curious kitten.',
+    themeColor: '#5E35B1',
+    pages: [
+      { page: 1, text: 'The little cat sits by the window.', svg: 'cat-star-p1', audio: 'audios/stories/cat-star_p1.m4a', pageBg: '#EDE7F6' },
+      { page: 2, text: 'Look up! A bright star shines in the sky.', svg: 'cat-star-p2', audio: 'audios/stories/cat-star_p2.m4a', pageBg: '#E8EAF6' },
+      { page: 3, text: 'Meow! Can I touch the golden star?', svg: 'cat-star-p3', audio: 'audios/stories/cat-star_p3.m4a', pageBg: '#E1F5FE' },
+      { page: 4, text: 'The little star winks and whispers goodnight.', svg: 'cat-star-p4', audio: 'audios/stories/cat-star_p4.m4a', pageBg: '#F3E5F5' },
+      { page: 5, text: 'The sleepy kitten curls up and dreams.', svg: 'cat-star-p5', audio: 'audios/stories/cat-star_p5.m4a', pageBg: '#EDE7F6' }
+    ]
+  },
+  {
+    id: 'pips-day',
+    title: "Pip's Busy Day",
+    coverSvg: 'cover-pips-day',
+    badge: 'Animals · Routines',
+    description: 'Follow Pip the happy puppy through his playful day!',
+    themeColor: '#00695C',
+    pages: [
+      { page: 1, text: 'Good morning! Pip wakes up and wags his tail.', svg: 'pips-day-p1', audio: 'audios/stories/pips-day_p1.m4a', pageBg: '#FFF9C4' },
+      { page: 2, text: 'Pip eats his yummy breakfast bowl.', svg: 'pips-day-p2', audio: 'audios/stories/pips-day_p2.m4a', pageBg: '#FFF8E1' },
+      { page: 3, text: 'Time to play! Pip chases his red bouncy ball.', svg: 'pips-day-p3', audio: 'audios/stories/pips-day_p3.m4a', pageBg: '#E8F5E9' },
+      { page: 4, text: 'Splish splash! Pip jumps in a muddy puddle.', svg: 'pips-day-p4', audio: 'audios/stories/pips-day_p4.m4a', pageBg: '#E1F5FE' },
+      { page: 5, text: 'Now Pip is clean and cuddles for a nap.', svg: 'pips-day-p5', audio: 'audios/stories/pips-day_p5.m4a', pageBg: '#F9FBE7' }
+    ]
+  },
+  {
+    id: 'magic-seed',
+    title: 'The Magic Seed',
+    coverSvg: 'cover-magic-seed',
+    badge: 'Nature · Colors',
+    description: 'Dig, water, and watch a giant flower bloom!',
+    themeColor: '#2E7D32',
+    pages: [
+      { page: 1, text: 'We dig a little hole in the soft brown soil.', svg: 'magic-seed-p1', audio: 'audios/stories/magic-seed_p1.m4a', pageBg: '#F1F8E9' },
+      { page: 2, text: 'Drop the tiny seed in and cover it gently.', svg: 'magic-seed-p2', audio: 'audios/stories/magic-seed_p2.m4a', pageBg: '#EFEBE9' },
+      { page: 3, text: 'Pour fresh water and let the warm sun shine.', svg: 'magic-seed-p3', audio: 'audios/stories/magic-seed_p3.m4a', pageBg: '#E3F2FD' },
+      { page: 4, text: 'Pop! Two green leaves sprout up high.', svg: 'magic-seed-p4', audio: 'audios/stories/magic-seed_p4.m4a', pageBg: '#E8F5E9' },
+      { page: 5, text: 'Look! A giant yellow sunflower blooms for you!', svg: 'magic-seed-p5', audio: 'audios/stories/magic-seed_p5.m4a', pageBg: '#FFFDE7' }
+    ]
+  },
+  {
+    id: 'where-teddy',
+    title: 'Where Is My Teddy?',
+    coverSvg: 'cover-where-teddy',
+    badge: 'Seek & Find',
+    description: 'A fun hide-and-seek story looking around the room.',
+    themeColor: '#C2185B',
+    pages: [
+      { page: 1, text: 'Where is my teddy bear? I want a hug!', svg: 'where-teddy-p1', audio: 'audios/stories/where-teddy_p1.m4a', pageBg: '#FCE4EC' },
+      { page: 2, text: 'Is Teddy under the bed? No, just fuzzy slippers!', svg: 'where-teddy-p2', audio: 'audios/stories/where-teddy_p2.m4a', pageBg: '#EDE7F6' },
+      { page: 3, text: 'Is Teddy inside the big toy box? No, just blocks!', svg: 'where-teddy-p3', audio: 'audios/stories/where-teddy_p3.m4a', pageBg: '#FFF3E0' },
+      { page: 4, text: 'Is Teddy behind the armchair? Look at those brown ears!', svg: 'where-teddy-p4', audio: 'audios/stories/where-teddy_p4.m4a', pageBg: '#E8EAF6' },
+      { page: 5, text: 'I found you! Big warm hugs for Teddy Bear!', svg: 'where-teddy-p5', audio: 'audios/stories/where-teddy_p5.m4a', pageBg: '#FCE4EC' }
+    ]
+  }
+];
+
 // ═══════════════════════════════════════════════
 //  ACTIVITIES CONFIGURATION
 // ═══════════════════════════════════════════════
 const ACTIVITIES = {
+  storybooks: {
+    id: 'storybooks',
+    name: 'Storybooks',
+    icon: 'icon-storybooks',
+    color: '#7E57C2',
+    description: 'Read-along picture books',
+    cards: [1, 2, 3, 4],
+    books: STORYBOOKS
+  },
   phonics: {
     id: 'phonics',
     name: 'Phonics',
@@ -4775,6 +5730,310 @@ const preloadedAudios = {};
 // ═══════════════════════════════════════════════
 //  NAVIGATION FUNCTIONS
 // ═══════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════
+//  STORYBOOK CONTROLLER & NAVIGATION
+// ═══════════════════════════════════════════════
+let currentStoryBook = null;
+let currentStoryPageIndex = 0;
+let isStoryReading = false;
+let storyWordTimeouts = [];
+
+function openStorybooksLibrary() {
+  stopCurrentAudio();
+  stopStoryAudio();
+  AppState.screen = 'storybooks-library';
+  
+  document.getElementById('homeContainer').style.display = 'none';
+  document.getElementById('activityContainer').style.display = 'none';
+  document.getElementById('storybooksContainer').style.display = 'flex';
+  document.getElementById('storyLibraryView').style.display = 'flex';
+  document.getElementById('storyReaderView').style.display = 'none';
+  document.getElementById('homeBtn').style.display = 'flex';
+  document.getElementById('logoArea').style.display = 'none';
+  
+  renderStoryBookshelf();
+}
+
+function renderStoryBookshelf() {
+  const grid = document.getElementById('storyBookshelfGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  STORYBOOKS.forEach(book => {
+    const card = document.createElement('div');
+    card.className = 'story-book-card';
+    card.onclick = () => openStorybook(book.id);
+
+    card.innerHTML = `
+      <div class="story-cover-art">
+        ${STORY_SVGS[book.coverSvg] || ''}
+        <span class="story-cover-badge">${book.badge}</span>
+      </div>
+      <div class="story-cover-info">
+        <div class="story-card-title">${book.title}</div>
+        <div class="story-card-desc">${book.description}</div>
+        <button class="story-card-btn" style="background:${book.themeColor}">
+          <span>📖</span> Read Story
+        </button>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function openStorybook(bookId) {
+  stopCurrentAudio();
+  stopStoryAudio();
+  const book = STORYBOOKS.find(b => b.id === bookId);
+  if (!book) return;
+
+  currentStoryBook = book;
+  currentStoryPageIndex = 0;
+  AppState.screen = 'storybook-reader';
+
+  document.getElementById('storyLibraryView').style.display = 'none';
+  document.getElementById('storyReaderView').style.display = 'flex';
+  document.getElementById('storyFinishView').style.display = 'none';
+  document.getElementById('storyPageCard').style.display = 'flex';
+  document.getElementById('storyReaderControls').style.display = 'flex';
+
+  document.getElementById('storyBookTitle').textContent = book.title;
+
+  renderStoryPage(0);
+
+  // Auto-read first page if voice is on
+  if (voiceOn) {
+    setTimeout(() => {
+      readCurrentPage();
+    }, 450);
+  }
+}
+
+function closeStoryReader() {
+  stopStoryAudio();
+  AppState.screen = 'storybooks-library';
+  document.getElementById('storyLibraryView').style.display = 'flex';
+  document.getElementById('storyReaderView').style.display = 'none';
+}
+
+function renderStoryPage(pageIndex) {
+  if (!currentStoryBook || !currentStoryBook.pages[pageIndex]) return;
+  const page = currentStoryBook.pages[pageIndex];
+
+  // Update page indicators
+  const total = currentStoryBook.pages.length;
+  document.getElementById('storyPageIndicator').textContent = `Page ${pageIndex + 1} of ${total}`;
+
+  // Update button states
+  const prevBtn = document.getElementById('storyPrevBtn');
+  const nextBtn = document.getElementById('storyNextBtn');
+  prevBtn.disabled = (pageIndex === 0);
+  nextBtn.textContent = (pageIndex === total - 1) ? 'Finish Book ⭐' : 'Next Page ▶';
+
+  // Render illustration
+  const illusArea = document.getElementById('storyIllustrationArea');
+  illusArea.innerHTML = STORY_SVGS[page.svg] || '';
+  illusArea.style.backgroundColor = page.pageBg || '#FFFFFF';
+
+  // Render text with clickable word spans
+  const textArea = document.getElementById('storyTextArea');
+  textArea.innerHTML = '';
+  
+  // Split words while preserving punctuation
+  const words = page.text.split(' ');
+  words.forEach((w, idx) => {
+    const span = document.createElement('span');
+    span.className = 'story-word';
+    span.dataset.wordIndex = idx;
+    span.textContent = w;
+    span.onclick = (e) => {
+      e.stopPropagation();
+      speakStoryWord(w, span);
+    };
+    textArea.appendChild(span);
+  });
+}
+
+function nextStoryPage() {
+  if (!currentStoryBook) return;
+  stopStoryAudio();
+
+  const total = currentStoryBook.pages.length;
+  if (currentStoryPageIndex < total - 1) {
+    currentStoryPageIndex++;
+    renderStoryPage(currentStoryPageIndex);
+    if (voiceOn) {
+      setTimeout(() => readCurrentPage(), 400);
+    }
+  } else {
+    // Show finish celebration!
+    showStoryFinish();
+  }
+}
+
+function prevStoryPage() {
+  if (!currentStoryBook || currentStoryPageIndex <= 0) return;
+  stopStoryAudio();
+  currentStoryPageIndex--;
+  renderStoryPage(currentStoryPageIndex);
+  if (voiceOn) {
+    setTimeout(() => readCurrentPage(), 400);
+  }
+}
+
+function showStoryFinish() {
+  stopStoryAudio();
+  document.getElementById('storyPageCard').style.display = 'none';
+  document.getElementById('storyReaderControls').style.display = 'none';
+  document.getElementById('storyFinishView').style.display = 'flex';
+  document.getElementById('storyFinishSub').textContent = `You finished reading "${currentStoryBook.title}"! Excellent job! ⭐`;
+}
+
+function restartCurrentStory() {
+  if (!currentStoryBook) return;
+  document.getElementById('storyFinishView').style.display = 'none';
+  document.getElementById('storyPageCard').style.display = 'flex';
+  document.getElementById('storyReaderControls').style.display = 'flex';
+  currentStoryPageIndex = 0;
+  renderStoryPage(0);
+  if (voiceOn) {
+    setTimeout(() => readCurrentPage(), 400);
+  }
+}
+
+function toggleReadStoryPage() {
+  if (isStoryReading) {
+    stopStoryAudio();
+  } else {
+    readCurrentPage();
+  }
+}
+
+function stopStoryAudio() {
+  isStoryReading = false;
+  storyWordTimeouts.forEach(t => clearTimeout(t));
+  storyWordTimeouts = [];
+  
+  const wordEls = document.querySelectorAll('.story-word');
+  wordEls.forEach(el => el.classList.remove('speaking'));
+
+  const btn = document.getElementById('storyReadBtn');
+  if (btn) {
+    btn.classList.remove('reading');
+    document.getElementById('storyReadIcon').textContent = '🔊';
+    document.getElementById('storyReadText').textContent = 'Read To Me';
+  }
+
+  stopCurrentAudio();
+}
+
+function readCurrentPage() {
+  if (!currentStoryBook) return;
+  stopStoryAudio();
+
+  const page = currentStoryBook.pages[currentStoryPageIndex];
+  if (!page) return;
+
+  isStoryReading = true;
+  const btn = document.getElementById('storyReadBtn');
+  if (btn) {
+    btn.classList.add('reading');
+    document.getElementById('storyReadIcon').textContent = '⏸️';
+    document.getElementById('storyReadText').textContent = 'Pause';
+  }
+
+  const wordEls = Array.from(document.querySelectorAll('.story-word'));
+  const words = page.text.split(' ');
+  const totalWords = words.length;
+
+  // Check if neural narration audio exists
+  const audioFile = page.audio;
+  if (audioFile) {
+    const a = new Audio(audioFile);
+    activeAudio = a;
+
+    a.onloadedmetadata = () => {
+      const durationMs = (a.duration || 3.0) * 1000;
+      const wordTime = durationMs / Math.max(totalWords, 1);
+      
+      // Schedule word highlighting synchronously
+      words.forEach((_, idx) => {
+        const tid = setTimeout(() => {
+          wordEls.forEach(el => el.classList.remove('speaking'));
+          if (wordEls[idx]) wordEls[idx].classList.add('speaking');
+        }, idx * wordTime);
+        storyWordTimeouts.push(tid);
+      });
+    };
+
+    a.onended = () => {
+      stopStoryAudio();
+    };
+
+    a.onerror = () => {
+      fallbackReadPage(page, wordEls);
+    };
+
+    a.play().catch(e => {
+      fallbackReadPage(page, wordEls);
+    });
+  } else {
+    fallbackReadPage(page, wordEls);
+  }
+}
+
+function fallbackReadPage(page, wordEls) {
+  const u = new SpeechSynthesisUtterance(page.text.toLowerCase());
+  if (bestVoice) u.voice = bestVoice;
+  u.rate = 0.82;
+  u.pitch = 1.05;
+
+  u.onboundary = (e) => {
+    if (e.name === 'word') {
+      const charIndex = e.charIndex;
+      let accumulated = 0;
+      wordEls.forEach((el, i) => {
+        const textLen = el.textContent.length;
+        if (charIndex >= accumulated && charIndex <= accumulated + textLen + 1) {
+          wordEls.forEach(w => w.classList.remove('speaking'));
+          el.classList.add('speaking');
+        }
+        accumulated += textLen + 1;
+      });
+    }
+  };
+
+  u.onend = u.onerror = () => {
+    stopStoryAudio();
+  };
+
+  window.speechSynthesis.speak(u);
+}
+
+function speakStoryWord(word, spanElement) {
+  stopStoryAudio();
+  if (spanElement) {
+    spanElement.classList.add('speaking');
+    setTimeout(() => spanElement.classList.remove('speaking'), 800);
+  }
+
+  const cleanWord = word.replace(/[^a-zA-Z]/g, '').toLowerCase();
+  const capitalized = cleanWord.charAt(0).toUpperCase() + cleanWord.slice(1);
+
+  if (AVAILABLE_AUDIOS.has(capitalized)) {
+    const a = new Audio(`audios/${capitalized}.m4a`);
+    activeAudio = a;
+    a.play().catch(() => {});
+  } else {
+    const u = new SpeechSynthesisUtterance(cleanWord);
+    if (bestVoice) u.voice = bestVoice;
+    u.rate = 0.8;
+    u.pitch = 1.06;
+    window.speechSynthesis.speak(u);
+  }
+}
+
 function renderHomeScreen() {
   const grid = document.getElementById('homeGrid');
   grid.innerHTML = '';
@@ -4805,12 +6064,18 @@ function renderHomeScreen() {
   });
 
   document.getElementById('homeContainer').style.display = 'flex';
+  const sbContainer = document.getElementById('storybooksContainer');
+  if (sbContainer) sbContainer.style.display = 'none';
   document.getElementById('activityContainer').style.display = 'none';
   document.getElementById('homeBtn').style.display = 'none';
   document.getElementById('logoArea').style.display = 'flex';
 }
 
 function startActivity(activityId) {
+  if (activityId === 'storybooks') {
+    openStorybooksLibrary();
+    return;
+  }
   const activity = ACTIVITIES[activityId];
   if (!activity || activity.cards.length === 0) return;
 
@@ -4892,6 +6157,10 @@ function filterPhonicsStage(stageId) {
 function goHome() {
   stopCurrentAudio();
   stopBgMusic();
+  stopStoryAudio();
+
+  const sbContainer = document.getElementById('storybooksContainer');
+  if (sbContainer) sbContainer.style.display = 'none';
 
   const stageBar = document.getElementById('phonicsStageBar');
   if (stageBar) stageBar.style.display = 'none';
@@ -5249,6 +6518,29 @@ function restartDeck() {
 }
 
 document.addEventListener('keydown', e => {
+  if (AppState.screen === 'storybook-reader') {
+    if (e.code === 'ArrowRight' || e.code === 'Space') {
+      e.preventDefault();
+      nextStoryPage();
+      return;
+    }
+    if (e.code === 'ArrowLeft') {
+      e.preventDefault();
+      prevStoryPage();
+      return;
+    }
+    if (e.code === 'Escape') {
+      e.preventDefault();
+      closeStoryReader();
+      return;
+    }
+  } else if (AppState.screen === 'storybooks-library') {
+    if (e.code === 'Escape') {
+      e.preventDefault();
+      goHome();
+      return;
+    }
+  }
   // Only handle keyboard when in activity screen
   if (AppState.screen !== 'activity') return;
 
@@ -5293,6 +6585,13 @@ document.addEventListener('keydown', e => {
 let tx=0, ty=0;
 document.addEventListener('touchstart', e=>{ tx=e.touches[0].clientX; ty=e.touches[0].clientY; },{passive:true});
 document.addEventListener('touchend', e=>{
+  if (AppState.screen === 'storybook-reader') {
+    const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+      if (dx < 0) nextStoryPage(); else prevStoryPage();
+    }
+    return;
+  }
   // Only handle swipes/taps when in activity screen
   if (AppState.screen !== 'activity') return;
 
