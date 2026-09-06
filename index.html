@@ -5801,13 +5801,6 @@ function openStorybook(bookId) {
   document.getElementById('storyBookTitle').textContent = book.title;
 
   renderStoryPage(0);
-
-  // Auto-read first page if voice is on
-  if (voiceOn) {
-    setTimeout(() => {
-      readCurrentPage();
-    }, 450);
-  }
 }
 
 function closeStoryReader() {
@@ -5863,9 +5856,6 @@ function nextStoryPage() {
   if (currentStoryPageIndex < total - 1) {
     currentStoryPageIndex++;
     renderStoryPage(currentStoryPageIndex);
-    if (voiceOn) {
-      setTimeout(() => readCurrentPage(), 400);
-    }
   } else {
     // Show finish celebration!
     showStoryFinish();
@@ -5877,9 +5867,6 @@ function prevStoryPage() {
   stopStoryAudio();
   currentStoryPageIndex--;
   renderStoryPage(currentStoryPageIndex);
-  if (voiceOn) {
-    setTimeout(() => readCurrentPage(), 400);
-  }
 }
 
 function showStoryFinish() {
@@ -5897,9 +5884,6 @@ function restartCurrentStory() {
   document.getElementById('storyReaderControls').style.display = 'flex';
   currentStoryPageIndex = 0;
   renderStoryPage(0);
-  if (voiceOn) {
-    setTimeout(() => readCurrentPage(), 400);
-  }
 }
 
 function toggleReadStoryPage() {
