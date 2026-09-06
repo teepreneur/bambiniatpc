@@ -4459,17 +4459,58 @@ function stopCurrentAudio() {
   }
 }
 
+function playAudioFile(path, btn, fallbackFn) {
+  stopCurrentAudio();
+  const a = new Audio(path);
+  activeAudio = a;
+  a.onended = () => {
+    if (activeAudio === a) {
+      activeAudio = null;
+      if (btn) btn.classList.remove('speaking');
+    }
+  };
+  a.onerror = () => {
+    if (activeAudio === a) {
+      activeAudio = null;
+      if (fallbackFn) fallbackFn();
+      else if (btn) btn.classList.remove('speaking');
+    }
+  };
+  a.play().catch(e => {
+    if (activeAudio === a) {
+      activeAudio = null;
+      if (fallbackFn) fallbackFn();
+      else if (btn) btn.classList.remove('speaking');
+    }
+  });
+}
+
+function playDotAudio(sound, onEnded) {
+  if (!voiceOn) return;
+  const cleanSound = sound.toLowerCase().replace(/[^a-z]/g, '');
+  const dotKey = `dot_${cleanSound}`;
+  if (AVAILABLE_PHONICS_AUDIOS.has(dotKey)) {
+    const a = new Audio(`audios/phonics/${dotKey}.m4a`);
+    a.onended = () => { if (onEnded) onEnded(); };
+    a.onerror = () => { if (onEnded) onEnded(); };
+    a.play().catch(() => { if (onEnded) onEnded(); });
+  } else {
+    const u = new SpeechSynthesisUtterance(sound.toLowerCase());
+    if (bestVoice) u.voice = bestVoice;
+    u.rate = 0.68;
+    u.pitch = 1.12;
+    u.onend = u.onerror = () => { if (onEnded) onEnded(); };
+    window.speechSynthesis.speak(u);
+  }
+}
+
 function speakPhoneme(phoneme, phoneticSound) {
   if (!voiceOn) return;
   if (musicOn) startBgMusic();
   stopCurrentAudio();
 
   const soundText = phoneticSound || phoneme;
-  const u = new SpeechSynthesisUtterance(soundText.toLowerCase());
-  if (bestVoice) u.voice = bestVoice;
-  u.rate = 0.68;
-  u.pitch = 1.12;
-  window.speechSynthesis.speak(u);
+  playDotAudio(soundText);
 }
 
 function speakSingleWord(word) {
@@ -4477,11 +4518,55 @@ function speakSingleWord(word) {
   if (musicOn) startBgMusic();
   stopCurrentAudio();
 
-  const u = new SpeechSynthesisUtterance(word.toLowerCase());
-  if (bestVoice) u.voice = bestVoice;
-  u.rate = 0.8;
-  u.pitch = 1.05;
-  window.speechSynthesis.speak(u);
+  const capitalized = word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  const titleNoSpaces = word.replace(/[^A-Za-z0-9]/g, '');
+  let audioPath = null;
+  if (AVAILABLE_AUDIOS.has(capitalized)) {
+    audioPath = `audios/${capitalized}.m4a`;
+  } else if (AVAILABLE_AUDIOS.has(titleNoSpaces)) {
+    audioPath = `audios/${titleNoSpaces}.m4a`;
+  }
+
+  if (audioPath) {
+    const a = new Audio(audioPath);
+    activeAudio = a;
+    a.play().catch(() => {});
+  } else {
+    const u = new SpeechSynthesisUtterance(word.toLowerCase());
+    if (bestVoice) u.voice = bestVoice;
+    u.rate = 0.8;
+    u.pitch = 1.05;
+    window.speechSynthesis.speak(u);
+  }
+}
+
+function getCardAudioPath(card) {
+  if (!card) return null;
+  // 1. Phonics Stage 1 letter prompt: audios/phonics/${card.id}.m4a
+  if (card.stage === 1 && card.id && AVAILABLE_PHONICS_AUDIOS.has(card.id)) {
+    return `audios/phonics/${card.id}.m4a`;
+  }
+  // 2. Phonics Stage 6 decodable phrase: audios/phonics/${card.id}.m4a
+  if (card.decodableWords && card.id && AVAILABLE_PHONICS_AUDIOS.has(card.id)) {
+    return `audios/phonics/${card.id}.m4a`;
+  }
+  // 3. Multi-word phrases (e.g. "GOOD MORNING" -> "GoodMorning.m4a")
+  const titleNoSpaces = card.word ? card.word.replace(/[^A-Za-z0-9]/g, '') : '';
+  if (titleNoSpaces && AVAILABLE_AUDIOS.has(titleNoSpaces)) {
+    return `audios/${titleNoSpaces}.m4a`;
+  }
+  // 4. Single capitalized word (e.g. "Cat.m4a")
+  if (card.word) {
+    const capitalized = card.word.charAt(0).toUpperCase() + card.word.slice(1).toLowerCase();
+    if (AVAILABLE_AUDIOS.has(capitalized)) {
+      return `audios/${capitalized}.m4a`;
+    }
+  }
+  // 5. Card ID directly
+  if (card.id && AVAILABLE_AUDIOS.has(card.id)) {
+    return `audios/${card.id}.m4a`;
+  }
+  return null;
 }
 
 function speakPhonicsCard(card) {
@@ -4492,16 +4577,21 @@ function speakPhonicsCard(card) {
   const btn = document.getElementById('voiceBtn');
   btn.classList.add('speaking');
 
-  // Stage 1: Letter Sounds (A says /æ/ as in Apple)
+  // Stage 1: Letter Sounds (A says ah as in Apple)
   if (card.stage === 1) {
-    const textToSay = card.prompt || `${card.word} says ${card.phoneticSounds?.[0]||card.word} as in ${card.exampleWord||card.word}`;
-    const u = new SpeechSynthesisUtterance(textToSay.toLowerCase());
-    if (bestVoice) u.voice = bestVoice;
-    u.rate = 0.82;
-    u.pitch = 1.06;
-    u.onend = u.onerror = () => btn.classList.remove('speaking');
-    window.speechSynthesis.speak(u);
-    return;
+    const audioPath = getCardAudioPath(card);
+    if (audioPath) {
+      playAudioFile(audioPath, btn, () => {
+        const textToSay = card.prompt || `${card.word} says ${card.phoneticSounds?.[0]||card.word} as in ${card.exampleWord||card.word}`;
+        const u = new SpeechSynthesisUtterance(textToSay.toLowerCase());
+        if (bestVoice) u.voice = bestVoice;
+        u.rate = 0.82;
+        u.pitch = 1.06;
+        u.onend = u.onerror = () => btn.classList.remove('speaking');
+        window.speechSynthesis.speak(u);
+      });
+      return;
+    }
   }
 
   // Stage 2-5: Words with Phonemes (Sound-by-sound blending!)
@@ -4516,63 +4606,52 @@ function speakPhonicsCard(card) {
         if (phonemeEls[idx]) phonemeEls[idx].classList.add('highlight');
 
         const sound = card.phoneticSounds?.[idx] || ph;
-        const u = new SpeechSynthesisUtterance(sound.toLowerCase());
-        if (bestVoice) u.voice = bestVoice;
-        u.rate = 0.65;
-        u.pitch = 1.12;
-        window.speechSynthesis.speak(u);
+        playDotAudio(sound);
       }, delay);
       phonicsTimeoutIds.push(tid);
-      delay += 520;
+      delay += 550;
     });
 
-    // Step 2: Blend into full word
+    // Step 2: Blend into full word!
     const tidBlend = setTimeout(() => {
       phonemeEls.forEach(el => el.classList.remove('highlight'));
-      const fullWordUtterance = new SpeechSynthesisUtterance(card.word.toLowerCase());
-      if (bestVoice) fullWordUtterance.voice = bestVoice;
-      fullWordUtterance.rate = 0.82;
-      fullWordUtterance.pitch = 1.08;
-      fullWordUtterance.onend = fullWordUtterance.onerror = () => btn.classList.remove('speaking');
-      window.speechSynthesis.speak(fullWordUtterance);
-    }, delay + 280);
+      const audioPath = getCardAudioPath(card);
+      if (audioPath) {
+        playAudioFile(audioPath, btn, () => {
+          const fullWordUtterance = new SpeechSynthesisUtterance(card.word.toLowerCase());
+          if (bestVoice) fullWordUtterance.voice = bestVoice;
+          fullWordUtterance.rate = 0.82;
+          fullWordUtterance.pitch = 1.08;
+          fullWordUtterance.onend = fullWordUtterance.onerror = () => btn.classList.remove('speaking');
+          window.speechSynthesis.speak(fullWordUtterance);
+        });
+      } else {
+        const fullWordUtterance = new SpeechSynthesisUtterance(card.word.toLowerCase());
+        if (bestVoice) fullWordUtterance.voice = bestVoice;
+        fullWordUtterance.rate = 0.82;
+        fullWordUtterance.pitch = 1.08;
+        fullWordUtterance.onend = fullWordUtterance.onerror = () => btn.classList.remove('speaking');
+        window.speechSynthesis.speak(fullWordUtterance);
+      }
+    }, delay + 250);
     phonicsTimeoutIds.push(tidBlend);
     return;
   }
 
   // Stage 6: Decodable Short Phrases
   if (card.decodableWords && card.decodableWords.length > 0) {
-    const wordEls = document.querySelectorAll('#topCard .decodable-word');
-    let delay = 0;
-
-    // Step 1: Read word by word
-    card.decodableWords.forEach((word, idx) => {
-      const tid = setTimeout(() => {
-        wordEls.forEach(el => el.classList.remove('highlight'));
-        if (wordEls[idx]) wordEls[idx].classList.add('highlight');
-
-        const u = new SpeechSynthesisUtterance(word.toLowerCase());
-        if (bestVoice) u.voice = bestVoice;
-        u.rate = 0.78;
-        u.pitch = 1.08;
-        window.speechSynthesis.speak(u);
-      }, delay);
-      phonicsTimeoutIds.push(tid);
-      delay += 620;
-    });
-
-    // Step 2: Read full phrase smoothly
-    const tidPhrase = setTimeout(() => {
-      wordEls.forEach(el => el.classList.remove('highlight'));
-      const uPhrase = new SpeechSynthesisUtterance(card.word.toLowerCase());
-      if (bestVoice) uPhrase.voice = bestVoice;
-      uPhrase.rate = 0.84;
-      uPhrase.pitch = 1.05;
-      uPhrase.onend = uPhrase.onerror = () => btn.classList.remove('speaking');
-      window.speechSynthesis.speak(uPhrase);
-    }, delay + 320);
-    phonicsTimeoutIds.push(tidPhrase);
-    return;
+    const audioPath = getCardAudioPath(card);
+    if (audioPath) {
+      playAudioFile(audioPath, btn, () => {
+        const uPhrase = new SpeechSynthesisUtterance(card.word.toLowerCase());
+        if (bestVoice) uPhrase.voice = bestVoice;
+        uPhrase.rate = 0.84;
+        uPhrase.pitch = 1.05;
+        uPhrase.onend = uPhrase.onerror = () => btn.classList.remove('speaking');
+        window.speechSynthesis.speak(uPhrase);
+      });
+      return;
+    }
   }
 
   playSyntheticFallback(card, btn);
@@ -4608,9 +4687,9 @@ function speakCard(card) {
 
   let customAudio = preloadedAudios[card.id];
   if (!customAudio) {
-    const capitalized = card.word.charAt(0).toUpperCase() + card.word.slice(1).toLowerCase();
-    if (AVAILABLE_AUDIOS.has(capitalized)) {
-      customAudio = new Audio(`audios/${capitalized}.m4a`);
+    const audioPath = getCardAudioPath(card);
+    if (audioPath) {
+      customAudio = new Audio(audioPath);
     }
   }
   
@@ -4660,9 +4739,35 @@ function toggleVoice() {
 // Legacy variables removed - now using AppState
 
 const AVAILABLE_AUDIOS = new Set([
-  'Apple','Baby','Ball','Basket','Bear','Bird','Boat','Book','Candle','Cat',
-  'Cup','Dog','Drum','Flower','Frog','Hand','Hat','Kitten','Leaf','Monkey',
-  'Moon','Pencil','Rabbit','Rocket','Star','Sun','Tree','Turtle','Water','Window'
+  'Am', 'An', 'Apple', 'Arms', 'At', 'Baby', 'Ball', 'Basket', 'Bat', 'Be',
+  'Bear', 'Bed', 'Best', 'Bird', 'Blue', 'Boat', 'Book', 'Brown', 'BrushYourTeeth',
+  'Butterfly', 'Candle', 'Car', 'Cat', 'Chicken', 'Chin', 'Circle', 'Clap',
+  'CleanUp', 'Climb', 'Cookie', 'Cow', 'Crawl', 'Cup', 'Daddy', 'Dance', 'Dog',
+  'Draw', 'Drink', 'DrinkWater', 'Drum', 'Duck', 'Ears', 'Eat', 'EatYourFood',
+  'Egg', 'Eight', 'Elephant', 'Eyes', 'Feet', 'Fish', 'Five', 'Fix', 'Flower',
+  'Four', 'Frog', 'Go', 'GoToThePotty', 'Goat', 'GoodMorning', 'Green', 'Hand',
+  'Hands', 'Hat', 'He', 'Head', 'Heart', 'Helmet', 'Horse', 'HugYourMummy',
+  'ILoveYou', 'Ice', 'In', 'Is', 'It', 'Jam', 'Juice', 'Jump', 'Kitten', 'Ladybug',
+  'Laugh', 'Leaf', 'Legs', 'Lion', 'Me', 'Milk', 'Monkey', 'Moon', 'Mouth', 'Mug',
+  'Mummy', 'My', 'Net', 'Nine', 'No', 'Nose', 'On', 'One', 'Orange', 'Owl', 'Pen',
+  'Pencil', 'Pig', 'Pin', 'Pink', 'Pot', 'Purple', 'PutOnYourShoes', 'Queen',
+  'Rabbit', 'Rectangle', 'Red', 'Rocket', 'Run', 'SayHello', 'SayPlease', 'Seven',
+  'ShareYourToys', 'Sheep', 'Ship', 'Sing', 'Sit', 'Six', 'Sky', 'Sleep', 'So',
+  'Sock', 'Square', 'Star', 'Stop', 'Sun', 'Sunset', 'Tap', 'Ten', 'ThankYou',
+  'Three', 'TimeForBed', 'TimeToPlay', 'Train', 'Tree', 'Triangle', 'Tummy',
+  'Turtle', 'Two', 'Up', 'Van', 'Walk', 'WashYourHands', 'Water', 'Wave', 'Window',
+  'WipeYourFace', 'XRay', 'Yellow', 'YoYo', 'Zoo'
+]);
+
+const AVAILABLE_PHONICS_AUDIOS = new Set([
+  'dot_ah', 'dot_ahr', 'dot_buh', 'dot_chuh', 'dot_duh', 'dot_ee', 'dot_eh',
+  'dot_err', 'dot_eye', 'dot_ff', 'dot_guh', 'dot_huh', 'dot_ih', 'dot_juh',
+  'dot_kss', 'dot_kuh', 'dot_kwuh', 'dot_ll', 'dot_mm', 'dot_nn', 'dot_oh',
+  'dot_puh', 'dot_shh', 'dot_sss', 'dot_tuh', 'dot_uh', 'dot_vvv', 'dot_wuh',
+  'dot_yuh', 'dot_zzz', 'ph-a', 'ph-b', 'ph-c', 'ph-d', 'ph-e', 'ph-f', 'ph-g',
+  'ph-h', 'ph-i', 'ph-j', 'ph-k', 'ph-l', 'ph-m', 'ph-n', 'ph-o', 'ph-p', 'ph-p1',
+  'ph-p2', 'ph-p3', 'ph-p4', 'ph-p5', 'ph-q', 'ph-r', 'ph-s', 'ph-t', 'ph-u',
+  'ph-v', 'ph-w', 'ph-x', 'ph-y', 'ph-z'
 ]);
 
 const preloadedAudios = {};
@@ -4801,14 +4906,23 @@ function goHome() {
 }
 
 function init() {
-  // Preload audio files for words activity
-  WORD_CARDS.forEach(card => {
-    const capitalized = card.word.charAt(0).toUpperCase() + card.word.slice(1).toLowerCase();
-    if (AVAILABLE_AUDIOS.has(capitalized)) {
-      const a = new Audio(`audios/${capitalized}.m4a`);
-      a.preload = 'auto';
-      preloadedAudios[card.id] = a;
-    }
+  // Preload audio files for all activities
+  const allDecks = [
+    WORD_CARDS, NUMBER_CARDS, COLOR_CARDS, SHAPE_CARDS,
+    PHRASE_CARDS, ANIMAL_CARDS, BODY_CARDS, ACTION_CARDS, PHONICS_CARDS
+  ];
+  allDecks.forEach(deck => {
+    if (!deck) return;
+    deck.forEach(card => {
+      const p = getCardAudioPath(card);
+      if (p && !preloadedAudios[card.id]) {
+        try {
+          const a = new Audio(p);
+          a.preload = 'auto';
+          preloadedAudios[card.id] = a;
+        } catch (e) {}
+      }
+    });
   });
   // Start at home screen
   renderHomeScreen();

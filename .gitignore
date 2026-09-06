@@ -4,3 +4,7 @@
 /scripts/
 /tmp/
 *.log
+.env
+*.env
+*credentials*.json
+service_account*.json
